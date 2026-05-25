@@ -1,0 +1,362 @@
+{
+  "/Users/aayurtshrestha/Projects/self/businessDiary/postcss.config.mjs": {
+    "mtime": 1778865880.789216,
+    "hash": "239f3ebf717465dc636818a1a619398d"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/next-env.d.ts": {
+    "mtime": 1778919497.9458225,
+    "hash": "d0f8375ae1199dc7acd3977fc33b78b8"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/playwright.config.ts": {
+    "mtime": 1778957242.646573,
+    "hash": "04433f82b1883df686c7f6680faa9d3d"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/vitest.config.ts": {
+    "mtime": 1778957241.3859355,
+    "hash": "7df0ec07e002f073451727bd01c06ae6"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/eslint.config.mjs": {
+    "mtime": 1778865880.7875826,
+    "hash": "dfa1f5f6a7037bf39dc510f30b180002"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/next.config.ts": {
+    "mtime": 1778865880.7882698,
+    "hash": "9b77af189a21a7a64e4bd7a426f64176"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/prisma/migrations/20250516000000_init/migration.sql": {
+    "mtime": 1778948079.9504406,
+    "hash": "320d2d0b3a5c766f67020c1abc454e0a"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/scripts/bug-finder-audit.ts": {
+    "mtime": 1778959093.2714965,
+    "hash": "b7d49781ca4cde3e6792fc6ac1ce68fb"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/scripts/audit/types.ts": {
+    "mtime": 1778958905.9265285,
+    "hash": "261cc84983529bd05e43cc439028d1cf"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/scripts/audit/reporter.ts": {
+    "mtime": 1778958927.4969218,
+    "hash": "559364fb8f94a3e2a8550c332c89e878"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/scripts/audit/scanner-utils.ts": {
+    "mtime": 1778958914.4427915,
+    "hash": "f76dfdb3ca25aa4ff7c95fde044f3c7a"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/scripts/audit/scanners/db-scanner.ts": {
+    "mtime": 1778958937.7356722,
+    "hash": "82400f8e2597f922bfc1e5334438ada1"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/scripts/audit/scanners/config-scanner.ts": {
+    "mtime": 1778959010.3560557,
+    "hash": "01ae2d81165328ec0b23cad6d6813eda"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/scripts/audit/scanners/security-scanner.ts": {
+    "mtime": 1778958984.1885798,
+    "hash": "f3488aef660197450b51f0745e9c7e0a"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/scripts/audit/scanners/chaos-edge-scanner.ts": {
+    "mtime": 1778959074.7542734,
+    "hash": "21ec4f6469876864e3ca4ee711c3d364"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/scripts/audit/scanners/typescript-scanner.ts": {
+    "mtime": 1778958996.610404,
+    "hash": "a9bf9565a1af7a31080c8a74e83d2285"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/scripts/audit/scanners/api-scanner.ts": {
+    "mtime": 1778958945.027037,
+    "hash": "015cecf09fc49603c3fbd48eaf3f6bae"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/scripts/audit/scanners/auth-scanner.ts": {
+    "mtime": 1778958958.2883883,
+    "hash": "977466fc30c720c97cc2ce8028ba2d5e"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/scripts/audit/scanners/component-scanner.ts": {
+    "mtime": 1778958969.9866855,
+    "hash": "a412bda2fd0ca5ac420f17ee2706bbb6"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/e2e/contracts/signup-contract.spec.ts": {
+    "mtime": 1778957396.689553,
+    "hash": "5777709450c2fa5c6947986755a37dd4"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/e2e/contracts/home-page-contract.spec.ts": {
+    "mtime": 1778957319.0832472,
+    "hash": "0ba696380d5f8d9c091669863e899816"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/e2e/contracts/api-error-contract.spec.ts": {
+    "mtime": 1778957320.9051955,
+    "hash": "f5d559c4e5c61bbde9aa9ea08b4bdcc5"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/generated/prisma/wasm-edge-light-loader.mjs": {
+    "mtime": 1778948015.87941,
+    "hash": "e1ffa9e3e86a79525c28d495840af9b6"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/generated/prisma/client.js": {
+    "mtime": 1778948015.877922,
+    "hash": "71012b991c297f14db46de6593c7c4c5"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/generated/prisma/edge.d.ts": {
+    "mtime": 1778948015.879645,
+    "hash": "b1a34f9b323447f227db5aa901d5f3a9"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/generated/prisma/query_compiler_fast_bg.wasm-base64.js": {
+    "mtime": 1778948015.9132986,
+    "hash": "9ff8860fa2dacced42ae2a25e3c4e169"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/generated/prisma/wasm-worker-loader.mjs": {
+    "mtime": 1778948015.8784337,
+    "hash": "567365abdd6a02725b3e9adb6e4f8a69"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/generated/prisma/index.js": {
+    "mtime": 1778948015.8766158,
+    "hash": "0f357989f9338d9e117d59761063707d"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/generated/prisma/edge.js": {
+    "mtime": 1778948015.8789165,
+    "hash": "7278cb9783e10c1c39073e05d80dc86a"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/generated/prisma/query_compiler_fast_bg.js": {
+    "mtime": 1778948015.9112034,
+    "hash": "d219f4698fc7a0d166df612de3481683"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/generated/prisma/index-browser.js": {
+    "mtime": 1778948015.8784165,
+    "hash": "3a1ddcde518d836ae9f40ba5188acb22"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/generated/prisma/default.js": {
+    "mtime": 1778948015.8781834,
+    "hash": "6f1901c5c19c7c76db1470cefa5357bb"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/generated/prisma/index.d.ts": {
+    "mtime": 1778948015.8793101,
+    "hash": "fdc4c746d4fc43c23466d9356dab5edd"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/generated/prisma/default.d.ts": {
+    "mtime": 1778948015.878204,
+    "hash": "6cfa5c5e0b5de6abfc20f2532414712c"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/generated/prisma/client.d.ts": {
+    "mtime": 1778948015.8785603,
+    "hash": "6cfa5c5e0b5de6abfc20f2532414712c"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/generated/prisma/runtime/client.js": {
+    "mtime": 1778948015.8855793,
+    "hash": "2629e23c298c5befee1988f763a5e9c5"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/generated/prisma/runtime/wasm-compiler-edge.js": {
+    "mtime": 1778948015.8855598,
+    "hash": "2a1a838948606f38d90b7471c48d7185"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/generated/prisma/runtime/index-browser.js": {
+    "mtime": 1778948015.8849523,
+    "hash": "e993c7a18b214f2ea03ff86cb2bee0ef"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/generated/prisma/runtime/index-browser.d.ts": {
+    "mtime": 1778948015.883549,
+    "hash": "20bfb41519655090035a71a8754a05f0"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/generated/prisma/runtime/client.d.ts": {
+    "mtime": 1778948015.8843505,
+    "hash": "0f923c8532fe8dd1ede40f7ce432a401"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/types/next-auth.d.ts": {
+    "mtime": 1778867306.0025942,
+    "hash": "75baf951a0084d2df91fb85923b3f286"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/types/contracts/tag.ts": {
+    "mtime": 1778957246.1033804,
+    "hash": "d3162a43aa630a64f913cfbf88d8eb54"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/types/contracts/category.ts": {
+    "mtime": 1778957245.5334463,
+    "hash": "a04b659e5b56621b24b5ea5bfe4cd98c"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/types/contracts/md-file.ts": {
+    "mtime": 1778957244.9016395,
+    "hash": "819692bbeab1af521bb90ff61796be27"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/types/contracts/vote.ts": {
+    "mtime": 1778957247.2723675,
+    "hash": "7566ac37f6b5416449aee410b8473dc6"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/types/contracts/api.ts": {
+    "mtime": 1778957243.4664154,
+    "hash": "360707c6f9745da5a327625813f55e85"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/types/contracts/location.ts": {
+    "mtime": 1778957248.7657762,
+    "hash": "1c4115cbc6031db14eb29b73a401864c"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/types/contracts/investment.ts": {
+    "mtime": 1778957249.3015392,
+    "hash": "39d2ad3bbafe747e793883b702f3249d"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/types/contracts/budget.ts": {
+    "mtime": 1778957247.9557443,
+    "hash": "c5619e6c38187bcc43bf4a2428782050"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/types/contracts/index.ts": {
+    "mtime": 1778957249.8255873,
+    "hash": "ec39da9991997a47964bc57d587c1614"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/types/contracts/comment.ts": {
+    "mtime": 1778957246.746419,
+    "hash": "747394dac57576a5511e971433a5190a"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/app/layout.tsx": {
+    "mtime": 1778867300.045615,
+    "hash": "9273cf3f2b58c93ac5f7da63a73c2830"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/app/page.tsx": {
+    "mtime": 1778958611.751282,
+    "hash": "d5f9d40f7e5b4eca7a4509b1c838963f"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/app/auth/signup/page.tsx": {
+    "mtime": 1778919157.3523242,
+    "hash": "0d72efd494b6da58a7d37137600ba9d3"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/app/auth/signin/page.tsx": {
+    "mtime": 1778919162.7641993,
+    "hash": "cd1340265c735fe5299750e097077a2f"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/app/api/auth/signup/route.ts": {
+    "mtime": 1778958629.809285,
+    "hash": "a3a221df74d8e103a861a612fec99dc9"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/app/api/auth/[...nextauth]/route.ts": {
+    "mtime": 1778867274.890134,
+    "hash": "198d48412047ca86f3cc8c58f6628b11"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/components/SessionProvider.tsx": {
+    "mtime": 1778958614.130864,
+    "hash": "5e515a70fcb96b18b4f525547ed4ef19"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/components/ui/markdown-editor.tsx": {
+    "mtime": 1778958615.286181,
+    "hash": "0630a12efae33d7e40e47fd2736b1e34"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/components/ui/card.tsx": {
+    "mtime": 1778867307.68976,
+    "hash": "4be937e00a434ffa44e7f0e82ae79d17"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/components/ui/sheet.tsx": {
+    "mtime": 1778867340.1946201,
+    "hash": "9ef21bceff143bfe214ff398ec382dc5"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/components/ui/label.tsx": {
+    "mtime": 1778867339.739079,
+    "hash": "14579f07e6e3133b6ee65d3ec778b013"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/components/ui/sonner.tsx": {
+    "mtime": 1778867339.9545593,
+    "hash": "f084303f7523d7382cb7776c1204102a"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/components/ui/avatar.tsx": {
+    "mtime": 1778867340.024571,
+    "hash": "0008445bf0b90f231d702bcd9141726c"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/components/ui/dialog.tsx": {
+    "mtime": 1778867307.7936988,
+    "hash": "1cee7ad259ba50554280a78f4a280f8c"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/components/ui/button.tsx": {
+    "mtime": 1778867340.286049,
+    "hash": "33f8ef5c351115f8904b2a2f3decef54"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/components/ui/dropdown-menu.tsx": {
+    "mtime": 1778867340.1081462,
+    "hash": "d0dcc892733b2a2bf644e5e0a634fe80"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/components/ui/select.tsx": {
+    "mtime": 1778867339.8178973,
+    "hash": "a3e67022a356770c24a77cec681059b2"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/components/ui/textarea.tsx": {
+    "mtime": 1778867339.8853507,
+    "hash": "6eb8633e9e461056b9bf88dfaf25fc6d"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/components/ui/input.tsx": {
+    "mtime": 1778867339.6417322,
+    "hash": "c7cbc8cd45d01649277bd7107581cb36"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/components/ui/form.tsx": {
+    "mtime": 1778867340.3684766,
+    "hash": "09ca07a7a4fbaf37c166c3aca7f6a797"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/__tests__/contracts/comment.test.ts": {
+    "mtime": 1778957293.0951784,
+    "hash": "4f44a29b92a2bb5df22bda9d62ba2dcc"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/__tests__/contracts/md-file.test.ts": {
+    "mtime": 1778957279.9309134,
+    "hash": "399761393ccbb2b1dbe9d33b679550a9"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/__tests__/contracts/budget.test.ts": {
+    "mtime": 1778957301.6495855,
+    "hash": "6cac55a5f80825a57e03cc0852946eeb"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/__tests__/contracts/location.test.ts": {
+    "mtime": 1778957306.5503933,
+    "hash": "f4f97136357aea9ebe59b166751949e4"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/__tests__/contracts/api-response.test.ts": {
+    "mtime": 1778958621.121926,
+    "hash": "a3fa781b2ac67fdf732d6fa1fc836616"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/__tests__/contracts/tag.test.ts": {
+    "mtime": 1778957288.465898,
+    "hash": "2c4c8d2371c5b181ed084244206ea505"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/__tests__/contracts/category.test.ts": {
+    "mtime": 1778957284.2682276,
+    "hash": "34fecf28e93d394e3f7ae075ea29b374"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/__tests__/contracts/vote.test.ts": {
+    "mtime": 1778957296.52049,
+    "hash": "7815d00c749abd8821606379e9fce30c"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/__tests__/contracts/investment.test.ts": {
+    "mtime": 1778957310.8184845,
+    "hash": "86fa7beb7338b1399ed54a51327d5c69"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/__tests__/audit/chaos-edge-scanner.test.ts": {
+    "mtime": 1778959128.7698264,
+    "hash": "33e622644037954d22b4106eecd4b9ce"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/lib/utils.ts": {
+    "mtime": 1778958613.25867,
+    "hash": "824bcae89abb14a68e275f1e1425e1f1"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/lib/db.ts": {
+    "mtime": 1778958612.64116,
+    "hash": "ec0cd5eb4eeb57247315ab9a44c4a77e"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/src/lib/auth.ts": {
+    "mtime": 1778958629.298049,
+    "hash": "fa764a9fe1897c390c40fbbffffad5c6"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/README.md": {
+    "mtime": 1778865880.7872086,
+    "hash": "f15aaa42d5d299d091b1171097ea56ad"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/public/file.svg": {
+    "mtime": 1778865880.7847784,
+    "hash": "d09f95206c3fa0bb9bd9fefabfd0ea71"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/public/vercel.svg": {
+    "mtime": 1778865880.7854002,
+    "hash": "c0af2f507b369b085b35ef4bbe3bcf1e"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/public/next.svg": {
+    "mtime": 1778865880.7858949,
+    "hash": "8e061864f388b47f33a1c3780831193e"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/public/globe.svg": {
+    "mtime": 1778865880.7863832,
+    "hash": "2aaafa6a49b6563925fe440891e32717"
+  },
+  "/Users/aayurtshrestha/Projects/self/businessDiary/public/window.svg": {
+    "mtime": 1778865880.7867615,
+    "hash": "a2760511c65806022ad20adf74370ff3"
+  }
+}

@@ -1,0 +1,247 @@
+{
+  "version": "5.2",
+  "steps": [
+    {
+      "tag": "CreateSchema",
+      "schemaName": "public"
+    },
+    {
+      "tag": "CreateTable",
+      "table": {
+        "name": "User",
+        "columns": [
+          { "name": "id", "type": "TEXT", "default": { "name": "cuid" }, "autoincrement": false },
+          { "name": "email", "type": "TEXT", "isRequired": true },
+          { "name": "emailVerified", "type": "TIMESTAMP(3)", "isRequired": false },
+          { "name": "name", "type": "TEXT", "isRequired": false },
+          { "name": "image", "type": "TEXT", "isRequired": false },
+          { "name": "hashedPassword", "type": "TEXT", "isRequired": false },
+          { "name": "createdAt", "type": "TIMESTAMP(3)", "default": { "name": "now" }, "isRequired": true },
+          { "name": "updatedAt", "type": "TIMESTAMP(3)", "isRequired": true }
+        ],
+        "primaryKey": { "columns": ["id"] },
+        "uniqueConstraints": [
+          { "name": "User_email_key", "columns": ["email"] }
+        ]
+      }
+    },
+    {
+      "tag": "CreateTable",
+      "table": {
+        "name": "Account",
+        "columns": [
+          { "name": "id", "type": "TEXT", "default": { "name": "cuid" }, "autoincrement": false },
+          { "name": "userId", "type": "TEXT", "isRequired": true },
+          { "name": "type", "type": "TEXT", "isRequired": true },
+          { "name": "provider", "type": "TEXT", "isRequired": true },
+          { "name": "providerAccountId", "type": "TEXT", "isRequired": true },
+          { "name": "refresh_token", "type": "TEXT", "isRequired": false },
+          { "name": "access_token", "type": "TEXT", "isRequired": false },
+          { "name": "expires_at", "type": "INTEGER", "isRequired": false },
+          { "name": "token_type", "type": "TEXT", "isRequired": false },
+          { "name": "scope", "type": "TEXT", "isRequired": false },
+          { "name": "id_token", "type": "TEXT", "isRequired": false },
+          { "name": "session_state", "type": "TEXT", "isRequired": false }
+        ],
+        "primaryKey": { "columns": ["id"] },
+        "uniqueConstraints": [
+          { "name": "Account_provider_providerAccountId_key", "columns": ["provider", "providerAccountId"] }
+        ]
+      }
+    },
+    {
+      "tag": "CreateTable",
+      "table": {
+        "name": "Session",
+        "columns": [
+          { "name": "id", "type": "TEXT", "default": { "name": "cuid" }, "autoincrement": false },
+          { "name": "sessionToken", "type": "TEXT", "isRequired": true },
+          { "name": "userId", "type": "TEXT", "isRequired": true },
+          { "name": "expires", "type": "TIMESTAMP(3)", "isRequired": true }
+        ],
+        "primaryKey": { "columns": ["id"] },
+        "uniqueConstraints": [
+          { "name": "Session_sessionToken_key", "columns": ["sessionToken"] }
+        ]
+      }
+    },
+    {
+      "tag": "CreateTable",
+      "table": {
+        "name": "VerificationToken",
+        "columns": [
+          { "name": "identifier", "type": "TEXT", "isRequired": true },
+          { "name": "token", "type": "TEXT", "isRequired": true },
+          { "name": "expires", "type": "TIMESTAMP(3)", "isRequired": true }
+        ],
+        "uniqueConstraints": [
+          { "name": "VerificationToken_token_key", "columns": ["token"] },
+          { "name": "VerificationToken_identifier_token_key", "columns": ["identifier", "token"] }
+        ]
+      }
+    },
+    {
+      "tag": "CreateTable",
+      "table": {
+        "name": "MdFile",
+        "columns": [
+          { "name": "id", "type": "TEXT", "default": { "name": "cuid" }, "autoincrement": false },
+          { "name": "title", "type": "TEXT", "isRequired": true },
+          { "name": "slug", "type": "TEXT", "isRequired": true },
+          { "name": "content", "type": "TEXT", "isRequired": true },
+          { "name": "description", "type": "TEXT", "isRequired": false },
+          { "name": "coverImage", "type": "TEXT", "isRequired": false },
+          { "name": "published", "type": "BOOLEAN", "default": { "name": "false" }, "isRequired": true },
+          { "name": "authorId", "type": "TEXT", "isRequired": true },
+          { "name": "createdAt", "type": "TIMESTAMP(3)", "default": { "name": "now" }, "isRequired": true },
+          { "name": "updatedAt", "type": "TIMESTAMP(3)", "isRequired": true }
+        ],
+        "primaryKey": { "columns": ["id"] },
+        "uniqueConstraints": [
+          { "name": "MdFile_slug_key", "columns": ["slug"] }
+        ]
+      }
+    },
+    {
+      "tag": "CreateTable",
+      "table": {
+        "name": "Category",
+        "columns": [
+          { "name": "id", "type": "TEXT", "default": { "name": "cuid" }, "autoincrement": false },
+          { "name": "name", "type": "TEXT", "isRequired": true },
+          { "name": "slug", "type": "TEXT", "isRequired": true },
+          { "name": "description", "type": "TEXT", "isRequired": false },
+          { "name": "createdAt", "type": "TIMESTAMP(3)", "default": { "name": "now" }, "isRequired": true },
+          { "name": "updatedAt", "type": "TIMESTAMP(3)", "isRequired": true }
+        ],
+        "primaryKey": { "columns": ["id"] },
+        "uniqueConstraints": [
+          { "name": "Category_slug_key", "columns": ["slug"] }
+        ]
+      }
+    },
+    {
+      "tag": "CreateTable",
+      "table": {
+        "name": "Tag",
+        "columns": [
+          { "name": "id", "type": "TEXT", "default": { "name": "cuid" }, "autoincrement": false },
+          { "name": "name", "type": "TEXT", "isRequired": true },
+          { "name": "slug", "type": "TEXT", "isRequired": true },
+          { "name": "createdAt", "type": "TIMESTAMP(3)", "default": { "name": "now" }, "isRequired": true },
+          { "name": "updatedAt", "type": "TIMESTAMP(3)", "isRequired": true }
+        ],
+        "primaryKey": { "columns": ["id"] },
+        "uniqueConstraints": [
+          { "name": "Tag_slug_key", "columns": ["slug"] }
+        ]
+      }
+    },
+    {
+      "tag": "CreateTable",
+      "table": {
+        "name": "FileCategory",
+        "columns": [
+          { "name": "fileId", "type": "TEXT", "isRequired": true },
+          { "name": "categoryId", "type": "TEXT", "isRequired": true }
+        ],
+        "primaryKey": { "columns": ["fileId", "categoryId"] }
+      }
+    },
+    {
+      "tag": "CreateTable",
+      "table": {
+        "name": "FileTag",
+        "columns": [
+          { "name": "fileId", "type": "TEXT", "isRequired": true },
+          { "name": "tagId", "type": "TEXT", "isRequired": true }
+        ],
+        "primaryKey": { "columns": ["fileId", "tagId"] }
+      }
+    },
+    {
+      "tag": "CreateTable",
+      "table": {
+        "name": "Vote",
+        "columns": [
+          { "name": "id", "type": "TEXT", "default": { "name": "cuid" }, "autoincrement": false },
+          { "name": "value", "type": "INTEGER", "isRequired": true },
+          { "name": "fileId", "type": "TEXT", "isRequired": true },
+          { "name": "userId", "type": "TEXT", "isRequired": true },
+          { "name": "createdAt", "type": "TIMESTAMP(3)", "default": { "name": "now" }, "isRequired": true }
+        ],
+        "primaryKey": { "columns": ["id"] },
+        "uniqueConstraints": [
+          { "name": "Vote_fileId_userId_key", "columns": ["fileId", "userId"] }
+        ]
+      }
+    },
+    {
+      "tag": "CreateTable",
+      "table": {
+        "name": "BudgetEstimate",
+        "columns": [
+          { "name": "id", "type": "TEXT", "default": { "name": "cuid" }, "autoincrement": false },
+          { "name": "fileId", "type": "TEXT", "isRequired": true },
+          { "name": "amount", "type": "DOUBLE PRECISION", "isRequired": true },
+          { "name": "currency", "type": "TEXT", "default": { "name": "'USD'" }, "isRequired": true },
+          { "name": "description", "type": "TEXT", "isRequired": false },
+          { "name": "createdById", "type": "TEXT", "isRequired": true },
+          { "name": "createdAt", "type": "TIMESTAMP(3)", "default": { "name": "now" }, "isRequired": true },
+          { "name": "updatedAt", "type": "TIMESTAMP(3)", "isRequired": true }
+        ],
+        "primaryKey": { "columns": ["id"] }
+      }
+    },
+    {
+      "tag": "CreateTable",
+      "table": {
+        "name": "Location",
+        "columns": [
+          { "name": "id", "type": "TEXT", "default": { "name": "cuid" }, "autoincrement": false },
+          { "name": "fileId", "type": "TEXT", "isRequired": true },
+          { "name": "name", "type": "TEXT", "isRequired": true },
+          { "name": "address", "type": "TEXT", "isRequired": false },
+          { "name": "latitude", "type": "DOUBLE PRECISION", "isRequired": false },
+          { "name": "longitude", "type": "DOUBLE PRECISION", "isRequired": false },
+          { "name": "createdAt", "type": "TIMESTAMP(3)", "default": { "name": "now" }, "isRequired": true }
+        ],
+        "primaryKey": { "columns": ["id"] }
+      }
+    },
+    {
+      "tag": "CreateTable",
+      "table": {
+        "name": "Comment",
+        "columns": [
+          { "name": "id", "type": "TEXT", "default": { "name": "cuid" }, "autoincrement": false },
+          { "name": "content", "type": "TEXT", "isRequired": true },
+          { "name": "fileId", "type": "TEXT", "isRequired": true },
+          { "name": "authorId", "type": "TEXT", "isRequired": true },
+          { "name": "parentId", "type": "TEXT", "isRequired": false },
+          { "name": "createdAt", "type": "TIMESTAMP(3)", "default": { "name": "now" }, "isRequired": true },
+          { "name": "updatedAt", "type": "TIMESTAMP(3)", "isRequired": true }
+        ],
+        "primaryKey": { "columns": ["id"] }
+      }
+    },
+    {
+      "tag": "CreateTable",
+      "table": {
+        "name": "InvestmentInterest",
+        "columns": [
+          { "name": "id", "type": "TEXT", "default": { "name": "cuid" }, "autoincrement": false },
+          { "name": "fileId", "type": "TEXT", "isRequired": true },
+          { "name": "userId", "type": "TEXT", "isRequired": true },
+          { "name": "amount", "type": "DOUBLE PRECISION", "isRequired": false },
+          { "name": "message", "type": "TEXT", "isRequired": false },
+          { "name": "createdAt", "type": "TIMESTAMP(3)", "default": { "name": "now" }, "isRequired": true }
+        ],
+        "primaryKey": { "columns": ["id"] },
+        "uniqueConstraints": [
+          { "name": "InvestmentInterest_fileId_userId_key", "columns": ["fileId", "userId"] }
+        ]
+      }
+    }
+  ]
+}

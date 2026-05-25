@@ -1,0 +1,212 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  emailVerified  DateTime?
+  name           String?
+  image          String?
+  hashedPassword String?
+  accounts       Account[]
+  sessions       Session[]
+  mdFiles        MdFile[]
+  votes          Vote[]
+  comments       Comment[]
+  budgetEstimates BudgetEstimate[]
+  budgetItems    BudgetItem[]
+  investmentInterests InvestmentInterest[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model MdFile {
+  id               String               @id @default(cuid())
+  title            String
+  slug             String               @unique
+  content          String
+  description      String?
+  coverImage       String?
+  published        Boolean              @default(false)
+  authorId         String
+  author           User                 @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  categories       FileCategory[]
+  tags             FileTag[]
+  votes            Vote[]
+  comments         Comment[]
+  budgetEstimates  BudgetEstimate[]
+  budgetItems      BudgetItem[]
+  feasibilityEntries FeasibilityEntry[]
+  locations        Location[]
+  investmentInterests InvestmentInterest[]
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+}
+
+model Category {
+  id          String        @id @default(cuid())
+  name        String
+  slug        String        @unique
+  description String?
+  files       FileCategory[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model Tag {
+  id        String    @id @default(cuid())
+  name      String
+  slug      String    @unique
+  files     FileTag[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model FileCategory {
+  fileId     String
+  categoryId String
+  file       MdFile   @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([fileId, categoryId])
+}
+
+model FileTag {
+  fileId String
+  tagId  String
+  file   MdFile @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([fileId, tagId])
+}
+
+model Vote {
+  id        String   @id @default(cuid())
+  value     Int
+  fileId    String
+  userId    String
+  file      MdFile   @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([fileId, userId])
+}
+
+model BudgetEstimate {
+  id          String   @id @default(cuid())
+  fileId      String
+  amount      Float
+  currency    String   @default("USD")
+  description String?
+  createdById String
+  file        MdFile   @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  createdBy   User     @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model BudgetItem {
+  id        String   @id @default(cuid())
+  fileId    String
+  label     String
+  amount    Float
+  type      String   // "revenue" | "cost" | "investment"
+  createdById String?
+  file      MdFile   @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  createdBy User?    @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+
+  @@map("budget_items")
+}
+
+model FeasibilityEntry {
+  id        String   @id @default(cuid())
+  fileId    String
+  country   String
+  place     String?
+  score     Float
+  notes     String?
+  file      MdFile   @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@map("feasibility_entries")
+}
+
+model Location {
+  id        String   @id @default(cuid())
+  fileId    String
+  name      String
+  address   String?
+  latitude  Float?
+  longitude Float?
+  file      MdFile   @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Comment {
+  id        String    @id @default(cuid())
+  content   String
+  fileId    String
+  authorId  String
+  parentId  String?
+  file      MdFile    @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   Comment[] @relation("CommentReplies")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model InvestmentInterest {
+  id        String   @id @default(cuid())
+  fileId    String
+  userId    String
+  amount    Float?
+  message   String?
+  file      MdFile   @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([fileId, userId])
+}

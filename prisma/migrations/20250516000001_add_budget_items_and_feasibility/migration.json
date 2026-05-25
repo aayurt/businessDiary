@@ -1,0 +1,37 @@
+{
+  "version": "5.2",
+  "steps": [
+    {
+      "tag": "CreateTable",
+      "table": {
+        "name": "BudgetItem",
+        "columns": [
+          { "name": "id", "type": "TEXT", "default": { "name": "cuid" }, "autoincrement": false },
+          { "name": "fileId", "type": "TEXT", "isRequired": true },
+          { "name": "label", "type": "TEXT", "isRequired": true },
+          { "name": "amount", "type": "DOUBLE PRECISION", "isRequired": true },
+          { "name": "type", "type": "TEXT", "isRequired": true },
+          { "name": "createdById", "type": "TEXT", "isRequired": false },
+          { "name": "createdAt", "type": "TIMESTAMP(3)", "default": { "name": "now" }, "isRequired": true }
+        ],
+        "primaryKey": { "columns": ["id"] }
+      }
+    },
+    {
+      "tag": "CreateTable",
+      "table": {
+        "name": "FeasibilityEntry",
+        "columns": [
+          { "name": "id", "type": "TEXT", "default": { "name": "cuid" }, "autoincrement": false },
+          { "name": "fileId", "type": "TEXT", "isRequired": true },
+          { "name": "country", "type": "TEXT", "isRequired": true },
+          { "name": "place", "type": "TEXT", "isRequired": false },
+          { "name": "score", "type": "DOUBLE PRECISION", "isRequired": true },
+          { "name": "notes", "type": "TEXT", "isRequired": false },
+          { "name": "createdAt", "type": "TIMESTAMP(3)", "default": { "name": "now" }, "isRequired": true }
+        ],
+        "primaryKey": { "columns": ["id"] }
+      }
+    }
+  ]
+}
