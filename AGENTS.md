@@ -1,3 +1,7 @@
+# Environment
+- `AUTH_URL` must be set to `http://localhost:3000` in `.env` (NextAuth UntrustedHost fix)
+- `WATCHPACK_POLLING=true` required in `dev` script (avoids EMFILE on macOS with 128K node_modules files)
+
 # Commands
 
 ## Development
