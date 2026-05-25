@@ -45,6 +45,15 @@ next-env.d.ts
 # build output
 /dist
 
+# auto-generated analysis artifacts
+/graphify-out/
+
+# audit script output
+/audit-output/
+
+# leftover tool artifacts
+.octogent-checkpoint/
+
 # playwright
 /playwright-report/
 /test-results/
