@@ -20,13 +20,20 @@ import {
   TrendingUp,
   ThumbsUp,
   MessageSquare,
-  Loader2,
   PanelRightClose,
   PanelRightOpen,
   Bot,
+  Globe,
+  Lock,
+  Users,
+  Link2,
+  Check,
+  Loader2,
 } from "lucide-react"
 import { toast } from "sonner"
-import { useFile, useUpdateFile } from "@/lib/hooks/use-file"
+import { useFile, useUpdateFile, usePublishFile } from "@/lib/hooks/use-file"
+import { ShareDialog } from "@/components/ui/share-dialog"
+import type { PrivacyMode, PublicPage } from "@/types/file"
 
 function cacheKey(fileId: string) {
   return `file:${fileId}`
@@ -43,6 +50,9 @@ export default function EditorPage() {
   const [showSidebar, setShowSidebar] = React.useState(true)
   const [activeTab, setActiveTab] = React.useState<"edit" | "preview">("edit")
   const [ready, setReady] = React.useState(false)
+  const [privacy, setPrivacy] = React.useState<PrivacyMode>("PRIVATE")
+  const [publicPage, setPublicPage] = React.useState<PublicPage | null>(null)
+  const [shareDialogOpen, setShareDialogOpen] = React.useState(false)
 
   const lastSavedRef = React.useRef({ title: "", content: "", confidence: 0 })
   const fileIdRef = React.useRef(fileId)
@@ -100,6 +110,8 @@ export default function EditorPage() {
     setContent(serverFile.content)
     setTitle(serverFile.title)
     setConfidence(serverFile.confidenceScore ?? 0)
+    setPrivacy(serverFile.privacy)
+    setPublicPage(serverFile.publicPage ?? null)
     lastSavedRef.current = {
       title: serverFile.title,
       content: serverFile.content,
@@ -127,6 +139,7 @@ export default function EditorPage() {
           title,
           content,
           confidenceScore: confidence,
+          privacy,
         })
         lastSavedRef.current = { title, content, confidence }
         setLastSavedAt(new Date())
@@ -136,7 +149,7 @@ export default function EditorPage() {
         if (showToast) toast.error("Failed to save")
       }
     },
-    [title, content, confidence, saveToCache, updateFile],
+    [title, content, confidence, privacy, saveToCache, updateFile],
   )
 
   persistRef.current = doSave
@@ -165,6 +178,25 @@ export default function EditorPage() {
   }, [])
 
   const handleSave = () => persistRef.current?.(true)
+
+  const [publishCopied, setPublishCopied] = React.useState(false)
+  const publishFile = usePublishFile()
+
+  const handlePublish = async () => {
+    try {
+      const result = await publishFile.mutateAsync({ fileId })
+      await navigator.clipboard.writeText(result.url)
+      setPublishCopied(true)
+      toast.success(
+        publicPage
+          ? "Page updated and link copied"
+          : "Page published and link copied"
+      )
+      setTimeout(() => setPublishCopied(false), 2000)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to publish")
+    }
+  }
 
   const handleApplyResearch = (text: string) => {
     setContent((prev) => prev + (prev ? "\n\n" : "") + text)
@@ -216,6 +248,43 @@ export default function EditorPage() {
           </Button>
           <Button
             variant="ghost"
+            size="sm"
+            className="gap-1.5 h-8"
+            onClick={() => setShareDialogOpen(true)}
+          >
+            {privacy === "PUBLIC" ? (
+              <Globe className="h-3.5 w-3.5 text-green-500" />
+            ) : privacy === "SHARED" ? (
+              <Users className="h-3.5 w-3.5 text-amber-500" />
+            ) : (
+              <Lock className="h-3.5 w-3.5 text-muted-foreground" />
+            )}
+            <span className="text-xs">
+              {privacy === "PUBLIC" ? "Public" : privacy === "SHARED" ? "Shared" : "Private"}
+            </span>
+          </Button>
+          {privacy === "PUBLIC" && (
+            <Button
+              variant={publicPage ? "outline" : "default"}
+              size="sm"
+              className="gap-1.5 h-8"
+              onClick={handlePublish}
+              disabled={publishFile.isPending}
+            >
+              {publishFile.isPending ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : publishCopied ? (
+                <Check className="h-3.5 w-3.5 text-green-500" />
+              ) : (
+                <Link2 className="h-3.5 w-3.5" />
+              )}
+              <span className="text-xs">
+                {publishFile.isPending ? "Publishing..." : publicPage ? "Republish" : "Publish"}
+              </span>
+            </Button>
+          )}
+          <Button
+            variant="ghost"
             size="icon"
             onClick={() => setShowSidebar((v) => !v)}
             className="h-8 w-8 max-lg:hidden"
@@ -224,6 +293,20 @@ export default function EditorPage() {
           </Button>
         </div>
       </header>
+
+      <ShareDialog
+        open={shareDialogOpen}
+        onOpenChange={setShareDialogOpen}
+        fileId={fileId}
+        privacy={privacy}
+        onPrivacyChange={(newPrivacy) => {
+          setPrivacy(newPrivacy)
+          updateFile.mutate(
+            { fileId, privacy: newPrivacy },
+            { onSuccess: () => toast.success("Privacy updated") },
+          )
+        }}
+      />
 
       <div className="flex flex-1 overflow-hidden">
         <main className="flex-1 flex flex-col overflow-hidden">
@@ -238,9 +321,7 @@ export default function EditorPage() {
             </div>
             <div className="w-px bg-border shrink-0" />
             <div className="flex-1 min-w-0 overflow-y-auto p-8">
-              <div className="prose prose-slate dark:prose-invert max-w-none">
-                <Preview source={content} />
-              </div>
+              <Preview source={content} />
             </div>
           </div>
 
@@ -271,9 +352,7 @@ export default function EditorPage() {
               </TabsContent>
               <TabsContent value="preview">
                 <div className="border rounded-md p-8 bg-background min-h-[600px]">
-                  <div className="prose prose-slate dark:prose-invert max-w-none">
-                    <Preview source={content} />
-                  </div>
+                  <Preview source={content} />
                 </div>
               </TabsContent>
             </Tabs>

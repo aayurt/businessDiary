@@ -6,7 +6,7 @@ export interface DashboardSummary {
   totalComments: number;
   totalLocations: number;
   totalInvestmentInterests: number;
-  publishedEntries: number;
+  publicEntries: number;
 }
 
 export interface TopVotedEntry {

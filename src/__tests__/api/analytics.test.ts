@@ -56,7 +56,7 @@ describe('GET /api/analytics/summary', () => {
     vi.mocked(db.investmentInterest.count).mockResolvedValue(25)
 
     vi.mocked(db.mdFile.count).mockImplementation(async (args?: any) => {
-      if (args?.where?.published === true) return 30
+      if (args?.where?.privacy === 'PUBLIC') return 30
       return 42
     })
 
@@ -378,7 +378,7 @@ describe('GET /api/analytics/export', () => {
         id: '1',
         title: 'Test Entry',
         slug: 'test-entry',
-        published: true,
+        privacy: 'PUBLIC',
         author: { name: 'Alice', email: 'alice@test.com' },
         _count: { votes: 5, comments: 2 },
         createdAt: new Date('2024-01-01'),

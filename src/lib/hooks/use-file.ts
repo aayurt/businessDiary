@@ -1,7 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { addToOfflineQueue } from "@/lib/offline-queue"
-import type { FileEntry } from "@/types/file"
+import type { FileEntry, PrivacyMode, FileAccess } from "@/types/file"
 import { PROJECTS_KEY } from "./use-projects"
+
+export const ACCESS_KEY = (fileId: string) => ["file-access", fileId]
 
 export function fileKey(fileId: string) {
   return ["file", fileId]
@@ -36,6 +38,7 @@ export function useUpdateFile() {
       title?: string
       content?: string
       confidenceScore?: number
+      privacy?: PrivacyMode
     }): Promise<FileEntry> => {
       const res = await fetch(`/api/files/${fileId}`, {
         method: "PATCH",
@@ -141,6 +144,81 @@ export function useCreateFile() {
       })
     },
     onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: PROJECTS_KEY })
+    },
+  })
+}
+
+async function fetchAccess(fileId: string): Promise<FileAccess[]> {
+  const res = await fetch(`/api/files/${fileId}/access`)
+  const json = await res.json()
+  if (!json.success) throw new Error(json.error ?? "Failed to fetch access")
+  return json.data
+}
+
+export function useFileAccess(fileId: string) {
+  return useQuery({
+    queryKey: ACCESS_KEY(fileId),
+    queryFn: () => fetchAccess(fileId),
+    staleTime: 30 * 1000,
+    enabled: !!fileId,
+  })
+}
+
+export function useGrantAccess() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async ({ fileId, email }: { fileId: string; email: string }): Promise<FileAccess> => {
+      const res = await fetch(`/api/files/${fileId}/access`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      })
+      const json = await res.json()
+      if (!json.success) throw new Error(json.error ?? "Failed to grant access")
+      return json.data
+    },
+    onSuccess: (_data, vars) => {
+      queryClient.invalidateQueries({ queryKey: ACCESS_KEY(vars.fileId) })
+      queryClient.invalidateQueries({ queryKey: fileKey(vars.fileId) })
+    },
+  })
+}
+
+export function useRevokeAccess() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async ({ fileId, accessId }: { fileId: string; accessId: string }) => {
+      const res = await fetch(`/api/files/${fileId}/access?id=${accessId}`, {
+        method: "DELETE",
+      })
+      if (!res.ok) throw new Error("Failed to revoke access")
+    },
+    onSuccess: (_data, vars) => {
+      queryClient.invalidateQueries({ queryKey: ACCESS_KEY(vars.fileId) })
+      queryClient.invalidateQueries({ queryKey: fileKey(vars.fileId) })
+    },
+  })
+}
+
+export function usePublishFile() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async ({
+      fileId,
+    }: {
+      fileId: string
+    }): Promise<{ slug: string; url: string }> => {
+      const res = await fetch(`/api/files/${fileId}/publish`, { method: "POST" })
+      const json = await res.json()
+      if (!json.success) throw new Error(json.error ?? "Failed to publish")
+      return json.data
+    },
+    onSuccess: (_data, vars) => {
+      queryClient.invalidateQueries({ queryKey: fileKey(vars.fileId) })
       queryClient.invalidateQueries({ queryKey: PROJECTS_KEY })
     },
   })

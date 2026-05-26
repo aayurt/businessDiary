@@ -83,7 +83,7 @@ export function DashboardClient() {
         <StatCard
           title="Total Entries"
           value={summary?.totalEntries ?? 0}
-          description={`${summary?.publishedEntries ?? 0} published`}
+          description={`${summary?.publicEntries ?? 0} public`}
           icon={FileText}
         />
         <StatCard
@@ -117,13 +117,13 @@ export function DashboardClient() {
           icon={MapPin}
         />
         <StatCard
-          title="Published Rate"
+          title="Public Rate"
           value={
             summary && summary.totalEntries > 0
-              ? `${Math.round((summary.publishedEntries / summary.totalEntries) * 100)}%`
+              ? `${Math.round((summary.publicEntries / summary.totalEntries) * 100)}%`
               : "0%"
           }
-          description={`${summary?.publishedEntries ?? 0} of ${summary?.totalEntries ?? 0} entries`}
+          description={`${summary?.publicEntries ?? 0} of ${summary?.totalEntries ?? 0} entries`}
           icon={CheckCircle2}
         />
       </div>

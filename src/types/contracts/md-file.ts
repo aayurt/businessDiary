@@ -1,3 +1,5 @@
+import type { PrivacyMode } from "../file"
+
 export interface MdFile {
   id: string;
   title: string;
@@ -5,7 +7,7 @@ export interface MdFile {
   content: string;
   description: string | null;
   coverImage: string | null;
-  published: boolean;
+  privacy: PrivacyMode;
   authorId: string;
   createdAt: string;
   updatedAt: string;
@@ -17,7 +19,7 @@ export interface MdFileSummary {
   slug: string;
   description: string | null;
   coverImage: string | null;
-  published: boolean;
+  privacy: PrivacyMode;
   authorId: string;
   createdAt: string;
   updatedAt: string;
@@ -29,7 +31,7 @@ export interface CreateMdFileInput {
   content: string;
   description?: string;
   coverImage?: string;
-  published?: boolean;
+  privacy?: PrivacyMode;
   categoryIds?: string[];
   tagIds?: string[];
 }
@@ -40,7 +42,7 @@ export interface UpdateMdFileInput {
   content?: string;
   description?: string | null;
   coverImage?: string | null;
-  published?: boolean;
+  privacy?: PrivacyMode;
   categoryIds?: string[];
   tagIds?: string[];
 }

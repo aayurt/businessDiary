@@ -38,7 +38,7 @@ function makeAnalyticsSummaryResponse() {
       totalComments: 80,
       totalLocations: 12,
       totalInvestmentInterests: 25,
-      publishedEntries: 30,
+      publicEntries: 30,
     },
   }
 }
@@ -111,7 +111,7 @@ describe('API Integration — Cross-endpoint consistency', () => {
     vi.mocked(db.location.count).mockResolvedValue(12)
     vi.mocked(db.investmentInterest.count).mockResolvedValue(25)
     vi.mocked(db.mdFile.count).mockImplementation(async (args?: any) => {
-      if (args?.where?.published === true) return 30
+      if (args?.where?.privacy === 'PUBLIC') return 30
       return 42
     })
 
@@ -120,7 +120,7 @@ describe('API Integration — Cross-endpoint consistency', () => {
     const summaryBody = await summaryRes.json()
 
     expect(summaryBody.data.totalEntries).toBe(42)
-    expect(summaryBody.data.publishedEntries).toBe(30)
+    expect(summaryBody.data.publicEntries).toBe(30)
 
     vi.mocked(db.mdFile.findMany).mockResolvedValue([
       { id: '1', title: 'Entry A', slug: 'entry-a', author: { name: 'Alice' }, _count: { votes: 10 } },
@@ -141,7 +141,7 @@ describe('API Integration — Cross-endpoint consistency', () => {
   it('category count sums match total entries', async () => {
     vi.mocked(db.mdFile.count).mockResolvedValue(23)
     vi.mocked(db.mdFile.count).mockImplementation(async (args?: any) => {
-      if (args?.where?.published === true) return 23
+      if (args?.where?.privacy === 'PUBLIC') return 23
       return 23
     })
     vi.mocked(db.vote.count).mockResolvedValue(0)

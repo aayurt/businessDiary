@@ -8,19 +8,29 @@ export async function GET(
 ) {
   try {
     const session = await auth()
-    if (!session?.user?.id) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
-    }
-
     const { fileId } = await params
+
     const file = await db.mdFile.findUnique({
-      where: { id: fileId, authorId: session.user.id },
+      where: { id: fileId },
       include: {
         votes: true,
+        accessGrants: { include: { user: { select: { id: true, name: true, email: true } } } },
+        publicPage: true,
       },
     })
 
     if (!file) {
+      return NextResponse.json({ success: false, error: "Not found" }, { status: 404 })
+    }
+
+    const isAuthor = session?.user?.id && file.authorId === session.user.id
+    const hasAccess = file.accessGrants.some((g) => g.userId === session?.user?.id)
+
+    if (file.privacy === "PRIVATE" && !isAuthor) {
+      return NextResponse.json({ success: false, error: "Not found" }, { status: 404 })
+    }
+
+    if (file.privacy === "SHARED" && !isAuthor && !hasAccess) {
       return NextResponse.json({ success: false, error: "Not found" }, { status: 404 })
     }
 

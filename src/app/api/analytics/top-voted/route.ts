@@ -5,7 +5,7 @@ import type { TopVotedEntry } from "@/types/analytics"
 export async function GET() {
   try {
     const entries = await db.mdFile.findMany({
-      where: { published: true },
+      where: { privacy: "PUBLIC" },
       select: {
         id: true,
         title: true,

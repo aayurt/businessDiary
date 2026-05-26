@@ -9,7 +9,7 @@ describe('MdFile contract spec', () => {
     content: '# Introduction\n\nNext.js is a React framework...',
     description: 'A comprehensive guide to Next.js',
     coverImage: 'https://example.com/cover.jpg',
-    published: true,
+    privacy: 'PRIVATE',
     authorId: 'usr_abc123',
     createdAt: '2024-01-01T00:00:00.000Z',
     updatedAt: '2024-01-02T00:00:00.000Z',
@@ -25,7 +25,7 @@ describe('MdFile contract spec', () => {
         'content',
         'description',
         'coverImage',
-        'published',
+        'privacy',
         'authorId',
         'createdAt',
         'updatedAt',
@@ -65,10 +65,8 @@ describe('MdFile contract spec', () => {
     expect(file.coverImage).toBeNull();
   });
 
-  it('published is a boolean', () => {
-    expect(typeof validMdFile.published).toBe('boolean');
-    const draft: MdFile = { ...validMdFile, published: false };
-    expect(draft.published).toBe(false);
+  it('privacy is a valid mode', () => {
+    expect(['PUBLIC', 'SHARED', 'PRIVATE']).toContain(validMdFile.privacy);
   });
 
   it('createdAt and updatedAt are ISO date strings', () => {
@@ -83,7 +81,7 @@ describe('MdFile contract spec', () => {
       'slug',
       'description',
       'coverImage',
-      'published',
+      'privacy',
       'authorId',
       'createdAt',
       'updatedAt',
@@ -97,7 +95,7 @@ describe('MdFile contract spec', () => {
   it('serializes correctly', () => {
     const serialized = JSON.parse(JSON.stringify(validMdFile));
     expect(serialized.id).toBe('clx12345abcde');
-    expect(serialized.published).toBe(true);
+    expect(serialized.privacy).toBe('PRIVATE');
     expect(serialized).not.toHaveProperty('__v');
   });
 });
@@ -109,7 +107,7 @@ describe('MdFileSummary contract spec', () => {
     slug: 'getting-started-nextjs',
     description: 'A comprehensive guide',
     coverImage: null,
-    published: true,
+    privacy: 'PRIVATE',
     authorId: 'usr_abc123',
     createdAt: '2024-01-01T00:00:00.000Z',
     updatedAt: '2024-01-02T00:00:00.000Z',
@@ -147,7 +145,7 @@ describe('CreateMdFileInput contract spec', () => {
     };
     expect(input.description).toBeUndefined();
     expect(input.coverImage).toBeUndefined();
-    expect(input.published).toBeUndefined();
+    expect(input.privacy).toBeUndefined();
     expect(input.categoryIds).toBeUndefined();
     expect(input.tagIds).toBeUndefined();
   });
@@ -159,7 +157,7 @@ describe('CreateMdFileInput contract spec', () => {
       content: 'Full content',
       description: 'A description',
       coverImage: 'https://example.com/img.jpg',
-      published: true,
+      privacy: 'PUBLIC',
       categoryIds: ['cat1', 'cat2'],
       tagIds: ['tag1'],
     };
@@ -176,9 +174,9 @@ describe('UpdateMdFileInput contract spec', () => {
 
   it('accepts partial updates', () => {
     const justTitle: UpdateMdFileInput = { title: 'New Title' };
-    const justPublished: UpdateMdFileInput = { published: false };
+    const justPrivacy: UpdateMdFileInput = { privacy: 'PUBLIC' };
     expect(justTitle.title).toBe('New Title');
-    expect(justPublished.published).toBe(false);
+    expect(justPrivacy.privacy).toBe('PUBLIC');
   });
 
   it('allows setting description or coverImage to null', () => {

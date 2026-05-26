@@ -31,7 +31,7 @@ describe('GET /api/analytics/summary — edge cases', () => {
     vi.mocked(db.location.count).mockResolvedValue(0)
     vi.mocked(db.investmentInterest.count).mockResolvedValue(0)
     vi.mocked(db.mdFile.count).mockImplementation(async (args?: any) => {
-      if (args?.where?.published === true) return 0
+      if (args?.where?.privacy === 'PUBLIC') return 0
       return 0
     })
 
@@ -53,7 +53,7 @@ describe('GET /api/analytics/summary — edge cases', () => {
     vi.mocked(db.location.count).mockResolvedValue(1)
     vi.mocked(db.investmentInterest.count).mockResolvedValue(2)
     vi.mocked(db.mdFile.count).mockImplementation(async (args?: any) => {
-      if (args?.where?.published === true) return 3
+      if (args?.where?.privacy === 'PUBLIC') return 3
       return 5
     })
 
@@ -62,7 +62,7 @@ describe('GET /api/analytics/summary — edge cases', () => {
     const body = await response.json()
 
     expect(body.data.totalBudget).toBe(0)
-    expect(body.data.publishedEntries).toBe(3)
+    expect(body.data.publicEntries).toBe(3)
     expect(body.data.totalEntries).toBe(5)
   })
 })

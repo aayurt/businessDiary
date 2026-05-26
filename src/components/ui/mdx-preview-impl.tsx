@@ -1,15 +1,7 @@
 "use client"
 
-import {
-  MDXEditor,
-  headingsPlugin,
-  listsPlugin,
-  linkPlugin,
-  quotePlugin,
-  tablePlugin,
-  imagePlugin,
-  codeBlockPlugin,
-} from "@mdxeditor/editor"
+import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 
 interface MdxPreviewImplProps {
   source: string
@@ -17,19 +9,8 @@ interface MdxPreviewImplProps {
 
 export function MdxPreviewImpl({ source }: MdxPreviewImplProps) {
   return (
-    <MDXEditor
-      markdown={source}
-      readOnly
-      plugins={[
-        headingsPlugin(),
-        listsPlugin(),
-        linkPlugin(),
-        quotePlugin(),
-        tablePlugin(),
-        imagePlugin(),
-        codeBlockPlugin(),
-      ]}
-      contentEditableClassName="prose prose-slate dark:prose-invert max-w-none outline-none"
-    />
+    <div className="prose prose-slate dark:prose-invert max-w-none">
+      <ReactMarkdown remarkPlugins={[remarkGfm]}>{source}</ReactMarkdown>
+    </div>
   )
 }

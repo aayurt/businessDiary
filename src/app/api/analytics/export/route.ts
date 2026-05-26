@@ -32,11 +32,11 @@ export async function GET(request: NextRequest) {
         orderBy: { createdAt: "desc" },
       })
 
-      const headers = "ID,Title,Slug,Published,Author,Author Email,Votes,Comments,Created At,Updated At\n"
+      const headers = "ID,Title,Slug,Privacy,Author,Author Email,Votes,Comments,Created At,Updated At\n"
       const rows = entries
         .map(
           (e) =>
-            `"${e.id}","${e.title.replace(/"/g, '""')}","${e.slug}","${e.published}","${e.author?.name ?? ""}","${e.author?.email ?? ""}",${e._count.votes},${e._count.comments},"${e.createdAt.toISOString()}","${e.updatedAt.toISOString()}"`
+            `"${e.id}","${e.title.replace(/"/g, '""')}","${e.slug}","${e.privacy}","${e.author?.name ?? ""}","${e.author?.email ?? ""}",${e._count.votes},${e._count.comments},"${e.createdAt.toISOString()}","${e.updatedAt.toISOString()}"`
         )
         .join("\n")
       csv = headers + rows

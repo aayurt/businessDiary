@@ -7,6 +7,36 @@ datasource db {
   provider = "postgresql"
 }
 
+enum PrivacyMode {
+  PUBLIC
+  SHARED
+  PRIVATE
+}
+
+model FileAccess {
+  id        String   @id @default(cuid())
+  fileId    String
+  userId    String?
+  email     String
+  file      MdFile   @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([fileId, email])
+}
+
+model PublicPage {
+  id          String   @id @default(cuid())
+  fileId      String   @unique
+  slug        String   @unique
+  title       String
+  content     String
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  file        MdFile   @relation(fields: [fileId], references: [id], onDelete: Cascade)
+}
+
 model User {
   id             String    @id @default(cuid())
   email          String    @unique
@@ -23,6 +53,7 @@ model User {
   budgetEstimates BudgetEstimate[]
   budgetItems    BudgetItem[]
   investmentInterests InvestmentInterest[]
+  grantedAccess  FileAccess[]
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 }
@@ -80,12 +111,14 @@ model MdFile {
   content          String
   description      String?
   coverImage       String?
-  published        Boolean              @default(false)
-  confidenceScore  Int?                 @default(0)
+  privacy            PrivacyMode          @default(PRIVATE)
+  confidenceScore     Int?                 @default(0)
   authorId         String
   author           User                 @relation(fields: [authorId], references: [id], onDelete: Cascade)
   projectId        String?
   project          Project?             @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  accessGrants     FileAccess[]
+  publicPage       PublicPage?
   categories       FileCategory[]
   tags             FileTag[]
   votes            Vote[]
