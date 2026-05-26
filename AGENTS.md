@@ -1,11 +1,11 @@
 # Environment
 - `AUTH_URL` must be set to `http://localhost:3000` in `.env` (NextAuth UntrustedHost fix)
-- `WATCHPACK_POLLING=true` required in `dev` script (avoids EMFILE on macOS with 128K node_modules files)
+- Before starting dev server: `ulimit -n 65536` and `WATCHPACK_POLLING=true` (macOS open-file limit workaround). The `sudo launchctl limit maxfiles 524288 524288` command is an alternative but requires root.
 
 # Commands
 
 ## Development
-- `npm run dev` — Start Next.js dev server
+- `npm run dev` — Start Next.js dev server (uses webpack via `--no-turbopack` to avoid Turbopack recompilation-loop bug with dynamic API routes)
 - `npm run build` — Production build
 - `npm run start` — Start production server
 - `./deploy.sh` — One-command Docker deploy

@@ -4,6 +4,7 @@ import { useState } from "react"
 import { ArrowBigUp, ArrowBigDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { useVote } from "@/lib/hooks/use-file"
 
 interface VoteButtonProps {
   fileId: string
@@ -14,11 +15,11 @@ interface VoteButtonProps {
 export function VoteButton({ fileId, initialScore = 0, userVote: initialUserVote = null }: VoteButtonProps) {
   const [score, setScore] = useState(initialScore)
   const [userVote, setUserVote] = useState<number | null>(initialUserVote)
-  const [loading, setLoading] = useState(false)
+  const vote = useVote()
 
   async function handleVote(value: number) {
-    if (loading) return
-    setLoading(true)
+    if (vote.isPending) return
+    if (!navigator.onLine) return
 
     const previousVote = userVote
     const previousScore = score
@@ -31,19 +32,15 @@ export function VoteButton({ fileId, initialScore = 0, userVote: initialUserVote
       setScore(score + value - (userVote ?? 0))
     }
 
-    try {
-      const res = await fetch(`/api/files/${fileId}/vote`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ value }),
-      })
-      if (!res.ok) throw new Error("Vote failed")
-    } catch {
-      setUserVote(previousVote)
-      setScore(previousScore)
-    } finally {
-      setLoading(false)
-    }
+    vote.mutate(
+      { fileId, value },
+      {
+        onError: () => {
+          setUserVote(previousVote)
+          setScore(previousScore)
+        },
+      },
+    )
   }
 
   return (
@@ -55,7 +52,7 @@ export function VoteButton({ fileId, initialScore = 0, userVote: initialUserVote
         aria-label="Upvote"
         data-active={userVote === 1 ? "true" : "false"}
         className={cn("h-8 w-8", userVote === 1 && "text-emerald-500 bg-emerald-500/10")}
-        disabled={loading}
+        disabled={vote.isPending}
       >
         <ArrowBigUp className="h-5 w-5" />
       </Button>
@@ -69,7 +66,7 @@ export function VoteButton({ fileId, initialScore = 0, userVote: initialUserVote
         aria-label="Downvote"
         data-active={userVote === -1 ? "true" : "false"}
         className={cn("h-8 w-8", userVote === -1 && "text-red-500 bg-red-500/10")}
-        disabled={loading}
+        disabled={vote.isPending}
       >
         <ArrowBigDown className="h-5 w-5" />
       </Button>

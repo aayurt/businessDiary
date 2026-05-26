@@ -1,11 +1,11 @@
 "use client"
 
 import dynamic from "next/dynamic"
-import "@uiw/react-markdown-preview/markdown.css"
+import "@mdxeditor/editor/style.css"
 
-const MarkdownPreview = dynamic(
-  () => import("@uiw/react-markdown-preview"),
-  { ssr: false }
+const MdxPreviewImpl = dynamic(
+  () => import("./mdx-preview-impl").then((mod) => mod.MdxPreviewImpl),
+  { ssr: false },
 )
 
 interface PreviewProps {
@@ -13,9 +13,7 @@ interface PreviewProps {
 }
 
 export function Preview({ source }: PreviewProps) {
-  return (
-    <div className="wmde-markdown-var">
-      <MarkdownPreview source={source} />
-    </div>
-  )
+  // key=source forces MDXEditor to re-mount when content changes
+  // since MDXEditor ignores markdown prop updates after initial mount
+  return <MdxPreviewImpl key={source} source={source} />
 }

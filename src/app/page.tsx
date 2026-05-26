@@ -1,6 +1,8 @@
 import { auth, signOut } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { Button } from "@/components/ui/button"
+import { SidebarTrigger } from "@/components/ui/sidebar"
+import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
 
 export default async function Home() {
@@ -14,7 +16,13 @@ export default async function Home() {
   }
 
   return (
-    <main className="flex-1 flex flex-col items-center justify-center p-8">
+    <div className="flex flex-col flex-1">
+      <header className="flex h-12 shrink-0 items-center gap-2 border-b px-4">
+        <SidebarTrigger className="-ml-1" />
+        <Separator orientation="vertical" className="mr-2 h-4" />
+        <span className="text-sm font-medium">Home</span>
+      </header>
+      <main className="flex-1 flex flex-col items-center justify-center p-8">
       <h1 className="text-4xl font-bold mb-4">Next.js Boilerplate</h1>
       <p className="text-muted-foreground mb-8 text-center max-w-md">
         Next.js 16 with NextAuth, Prisma, shadcn/ui, and Markdown editor
@@ -61,5 +69,6 @@ export default async function Home() {
         )}
       </div>
     </main>
+    </div>
   )
 }

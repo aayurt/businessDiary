@@ -11,6 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useExport } from "@/lib/hooks/use-analytics"
 
 const EXPORT_TYPES = [
   { value: "entries", label: "Entries" },
@@ -21,18 +22,14 @@ const EXPORT_TYPES = [
 
 export function ExportButton() {
   const [exporting, setExporting] = useState<string | null>(null)
+  const exportMutation = useExport()
 
   async function handleExport(type: string, format: "csv" | "pdf") {
-    setExporting(`${type}-${format}`)
+    const key = `${type}-${format}`
+    setExporting(key)
+
     try {
-      const url = `/api/analytics/export?type=${type}&format=${format}`
-      const response = await fetch(url)
-
-      if (!response.ok) {
-        throw new Error("Export failed")
-      }
-
-      const blob = await response.blob()
+      const blob = await exportMutation.mutateAsync({ type, format })
       const blobUrl = window.URL.createObjectURL(blob)
       const a = document.createElement("a")
       a.href = blobUrl

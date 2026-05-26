@@ -4,13 +4,19 @@ import * as React from "react"
 import {
   FolderPlus,
   FilePlus,
-  Settings,
   ChevronRight,
   LayoutDashboard,
   Home,
   BookOpen,
+  Pencil,
+  Check,
+  X,
+  MoreHorizontal,
+  Trash2,
+  LogOut,
 } from "lucide-react"
 import { useRouter, usePathname } from "next/navigation"
+import { useSession, signOut } from "next-auth/react"
 
 import {
   Sidebar,
@@ -40,79 +46,153 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog"
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu"
+import {
+  useProjects,
+  useCreateProject,
+  useRenameProject,
+  useDeleteProject,
+} from "@/lib/hooks/use-projects"
+import {
+  useCreateFile,
+  useDeleteFile,
+} from "@/lib/hooks/use-file"
+import type { Project } from "@/types/project"
 
-interface Project {
-  id: string
-  name: string
-  files: {
-    id: string
-    title: string
-    slug: string
-  }[]
+function getInitials(user?: { name?: string | null; email?: string | null }) {
+  if (user?.name) {
+    const parts = user.name.trim().split(/\s+/)
+    return ((parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? "")).toUpperCase()
+  }
+  return (user?.email?.[0] ?? "?").toUpperCase()
 }
 
 export function AppSidebar() {
+  const session = useSession()
   const router = useRouter()
   const pathname = usePathname()
-  const [projects, setProjects] = React.useState<Project[]>([])
+  const { data: projects } = useProjects()
+  const createProject = useCreateProject()
+  const renameProject = useRenameProject()
+  const deleteProject = useDeleteProject()
+  const createFile = useCreateFile()
+  const deleteFile = useDeleteFile()
+
   const [isNewProjectDialogOpen, setIsNewProjectDialogOpen] = React.useState(false)
   const [newProjectName, setNewProjectName] = React.useState("")
-
-  const fetchProjects = async () => {
-    try {
-      const res = await fetch("/api/projects")
-      const json = await res.json()
-      if (json.success) {
-        setProjects(json.data)
-      }
-    } catch (error) {
-      console.error("Failed to fetch projects", error)
-    }
-  }
-
-  React.useEffect(() => {
-    fetchProjects()
-  }, [])
+  const [isNewFileDialogOpen, setIsNewFileDialogOpen] = React.useState(false)
+  const [newFileTitle, setNewFileTitle] = React.useState("")
+  const [newFileProjectId, setNewFileProjectId] = React.useState<string | null>(null)
+  const [editingFileId, setEditingFileId] = React.useState<string | null>(null)
+  const [editingFileTitle, setEditingFileTitle] = React.useState("")
+  const [editingProjectId, setEditingProjectId] = React.useState<string | null>(null)
+  const [editingProjectName, setEditingProjectName] = React.useState("")
+  const [deletingProjectId, setDeletingProjectId] = React.useState<string | null>(null)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false)
 
   const handleCreateProject = async () => {
-    if (!newProjectName) return
-    try {
-      const res = await fetch("/api/projects", {
-        method: "POST",
-        body: JSON.stringify({ name: newProjectName }),
-        headers: { "Content-Type": "application/json" },
-      })
-      if (res.ok) {
-        setNewProjectName("")
-        setIsNewProjectDialogOpen(false)
-        fetchProjects()
-      }
-    } catch (error) {
-      console.error("Failed to create project", error)
-    }
+    if (!newProjectName.trim()) return
+    createProject.mutate(newProjectName.trim())
+    setNewProjectName("")
+    setIsNewProjectDialogOpen(false)
   }
 
-  const handleCreateFile = async (projectId: string) => {
-    try {
-      const res = await fetch(`/api/files/projects/${projectId}`, {
-        method: "POST",
-        body: JSON.stringify({ title: "Untitled Entry" }),
-        headers: { "Content-Type": "application/json" },
-      })
-      if (res.ok) {
-        const json = await res.json()
-        router.push(`/editor/${json.data.id}`)
-        fetchProjects()
-      }
-    } catch (error) {
-      console.error("Failed to create file", error)
+  const handleCreateFile = async () => {
+    const projectId = newFileProjectId
+    if (!projectId || !newFileTitle.trim()) return
+
+    createFile.mutate(
+      { projectId, title: newFileTitle.trim() },
+      {
+        onSuccess: (data) => {
+          router.push(`/editor/${data.id}`)
+        },
+      },
+    )
+
+    setIsNewFileDialogOpen(false)
+    setNewFileTitle("")
+    setNewFileProjectId(null)
+  }
+
+  const openNewFileDialog = (projectId: string) => {
+    setNewFileProjectId(projectId)
+    setNewFileTitle("")
+    setIsNewFileDialogOpen(true)
+  }
+
+  const startRenamingFile = (file: { id: string; title: string }) => {
+    setEditingFileId(file.id)
+    setEditingFileTitle(file.title)
+  }
+
+  const cancelRenamingFile = () => {
+    setEditingFileId(null)
+    setEditingFileTitle("")
+  }
+
+  const saveRenameFile = (fileId: string) => {
+    const newTitle = editingFileTitle.trim()
+    if (!newTitle) {
+      cancelRenamingFile()
+      return
     }
+    const project = projects?.find((p) => p.files.some((f) => f.id === fileId))
+    if (!project) return
+    setEditingFileId(null)
+    setEditingFileTitle("")
+  }
+
+  const startRenamingProject = (project: Project) => {
+    setEditingProjectId(project.id)
+    setEditingProjectName(project.name)
+  }
+
+  const cancelRenamingProject = () => {
+    setEditingProjectId(null)
+    setEditingProjectName("")
+  }
+
+  const saveRenameProject = () => {
+    const projectId = editingProjectId
+    const newName = editingProjectName.trim()
+    if (!projectId || !newName) {
+      cancelRenamingProject()
+      return
+    }
+    renameProject.mutate({ projectId, name: newName })
+    setEditingProjectId(null)
+    setEditingProjectName("")
+  }
+
+  const openDeleteDialog = (projectId: string) => {
+    setDeletingProjectId(projectId)
+    setIsDeleteDialogOpen(true)
+  }
+
+  const handleDeleteProject = () => {
+    const projectId = deletingProjectId
+    if (!projectId) return
+    deleteProject.mutate(projectId)
+    setIsDeleteDialogOpen(false)
+    setDeletingProjectId(null)
+  }
+
+  const handleDeleteFile = (fileId: string) => {
+    deleteFile.mutate(fileId)
   }
 
   return (
     <>
-      <Sidebar collapsible="icon">
+      <Sidebar collapsible="icon" variant="inset">
         <SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem>
@@ -162,36 +242,167 @@ export function AppSidebar() {
             </div>
             <SidebarGroupContent>
               <SidebarMenu>
-                {projects.map((project) => (
+                {projects?.map((project) => (
                   <Collapsible key={project.id} className="group/collapsible">
                     <SidebarMenuItem>
                       <CollapsibleTrigger asChild>
-                        <SidebarMenuButton tooltip={project.name}>
+                        <SidebarMenuButton
+                          tooltip={project.name}
+                          className="w-full"
+                        >
                           <ChevronRight className="size-4 transition-transform group-data-[state=open]/collapsible:rotate-90" />
-                          <span>{project.name}</span>
+                          {editingProjectId === project.id ? (
+                            <div className="flex flex-1 items-center gap-1 min-w-0">
+                              <Input
+                                value={editingProjectName}
+                                onChange={(e) => setEditingProjectName(e.target.value)}
+                                onKeyDown={(e) => {
+                                  e.stopPropagation()
+                                  if (e.key === "Enter") {
+                                    e.preventDefault()
+                                    saveRenameProject()
+                                  }
+                                  if (e.key === "Escape") {
+                                    cancelRenamingProject()
+                                  }
+                                }}
+                                onBlur={saveRenameProject}
+                                className="h-6 text-sm px-1 py-0"
+                                autoFocus
+                                onClick={(e) => e.stopPropagation()}
+                              />
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-5 w-5 shrink-0"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  saveRenameProject()
+                                }}
+                              >
+                                <Check className="size-3" />
+                              </Button>
+                            </div>
+                          ) : (
+                            <span className="flex-1 truncate">{project.name}</span>
+                          )}
+                          {editingProjectId !== project.id && (
+                            <div
+                              className="ml-auto flex items-center gap-0.5 shrink-0"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-6 w-6"
+                                onClick={() => openNewFileDialog(project.id)}
+                              >
+                                <FilePlus className="size-3" />
+                              </Button>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="h-6 w-6">
+                                    <MoreHorizontal className="size-3" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-40">
+                                  <DropdownMenuItem onClick={() => startRenamingProject(project)}>
+                                    <Pencil className="size-3.5 mr-2" />
+                                    Rename
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem
+                                    className="text-destructive focus:text-destructive"
+                                    onClick={() => openDeleteDialog(project.id)}
+                                  >
+                                    <Trash2 className="size-3.5 mr-2" />
+                                    Delete
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
+                          )}
                         </SidebarMenuButton>
                       </CollapsibleTrigger>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover/collapsible:opacity-100 h-6 w-6"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handleCreateFile(project.id)
-                        }}
-                      >
-                        <FilePlus className="size-3" />
-                      </Button>
                       <CollapsibleContent>
                         <SidebarMenuSub>
                           {project.files.map((file) => (
                             <SidebarMenuSubItem key={file.id}>
-                              <SidebarMenuSubButton
-                                isActive={pathname === `/editor/${file.id}`}
-                                onClick={() => router.push(`/editor/${file.id}`)}
-                              >
-                                <span>{file.title}</span>
-                              </SidebarMenuSubButton>
+                              {editingFileId === file.id ? (
+                                <div className="flex items-center gap-1 px-2 py-1">
+                                  <Input
+                                    value={editingFileTitle}
+                                    onChange={(e) => setEditingFileTitle(e.target.value)}
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Enter") {
+                                        e.preventDefault()
+                                        saveRenameFile(file.id)
+                                      }
+                                      if (e.key === "Escape") {
+                                        cancelRenamingFile()
+                                      }
+                                    }}
+                                    onBlur={() => saveRenameFile(file.id)}
+                                    className="h-7 text-sm px-1 py-0"
+                                    autoFocus
+                                  />
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-6 w-6 shrink-0"
+                                    onClick={() => saveRenameFile(file.id)}
+                                  >
+                                    <Check className="size-3" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-6 w-6 shrink-0"
+                                    onClick={cancelRenamingFile}
+                                  >
+                                    <X className="size-3" />
+                                  </Button>
+                                </div>
+                              ) : (
+                                <div className="group flex items-center">
+                                  <SidebarMenuSubButton
+                                    isActive={pathname === `/editor/${file.id}`}
+                                    onClick={() => router.push(`/editor/${file.id}`)}
+                                    className="flex-1 min-w-0"
+                                  >
+                                    <span className="flex-1 truncate">{file.title}</span>
+                                  </SidebarMenuSubButton>
+                                  <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-6 w-6 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        onClick={(e) => e.stopPropagation()}
+                                      >
+                                        <MoreHorizontal className="size-3" />
+                                      </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end" className="w-40">
+                                      <DropdownMenuItem onClick={(e) => { e.stopPropagation(); startRenamingFile(file); }}>
+                                        <Pencil className="size-3.5 mr-2" />
+                                        Rename
+                                      </DropdownMenuItem>
+                                      <DropdownMenuSeparator />
+                                      <DropdownMenuItem
+                                        className="text-destructive focus:text-destructive"
+                                        onClick={(e) => {
+                                          e.stopPropagation()
+                                          handleDeleteFile(file.id)
+                                        }}
+                                      >
+                                        <Trash2 className="size-3.5 mr-2" />
+                                        Delete
+                                      </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
+                                </div>
+                              )}
                             </SidebarMenuSubItem>
                           ))}
                           {project.files.length === 0 && (
@@ -211,10 +422,23 @@ export function AppSidebar() {
         <SidebarFooter>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton tooltip="Settings">
-                <Settings className="size-4" />
-                <span>Settings</span>
-              </SidebarMenuButton>
+              <div className="flex items-center gap-3 px-2 py-1.5">
+                <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
+                  {getInitials(session?.data?.user)}
+                </div>
+                <div className="flex flex-1 flex-col truncate text-sm group-data-[collapsible=icon]:hidden">
+                  <span className="truncate font-medium">{session?.data?.user?.name ?? "User"}</span>
+                  <span className="truncate text-xs text-muted-foreground">{session?.data?.user?.email}</span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 shrink-0"
+                  onClick={() => signOut({ redirectTo: "/auth/signin" })}
+                >
+                  <LogOut className="size-3.5" />
+                </Button>
+              </div>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarFooter>
@@ -238,6 +462,50 @@ export function AppSidebar() {
               Cancel
             </Button>
             <Button onClick={handleCreateProject}>Create</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isNewFileDialogOpen} onOpenChange={setIsNewFileDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>New Entry</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <Input
+              placeholder="Entry title"
+              value={newFileTitle}
+              onChange={(e) => setNewFileTitle(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleCreateFile()}
+              autoFocus
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsNewFileDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleCreateFile} disabled={!newFileTitle.trim()}>
+              Create
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Project</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this project? Its entries will be unlinked but not deleted.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteProject}>
+              Delete
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -1,6 +1,6 @@
 {
-  "name": "Next.js App — MD Editor & Dashboard",
-  "short_name": "NextApp",
+  "name": "Business Diary",
+  "short_name": "BizDiary",
   "description": "Markdown editing with dashboard analytics, voting, and collaboration. Edit and manage documents offline.",
   "start_url": "/",
   "display": "standalone",

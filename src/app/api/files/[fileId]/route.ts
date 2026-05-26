@@ -55,3 +55,26 @@ export async function PATCH(
     return NextResponse.json({ success: false, error: "Internal Server Error" }, { status: 500 })
   }
 }
+
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: Promise<{ fileId: string }> }
+) {
+  try {
+    const session = await auth()
+    if (!session?.user?.id) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+    }
+
+    const { fileId } = await params
+
+    await db.mdFile.delete({
+      where: { id: fileId, authorId: session.user.id },
+    })
+
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error("File DELETE error:", error)
+    return NextResponse.json({ success: false, error: "Internal Server Error" }, { status: 500 })
+  }
+}

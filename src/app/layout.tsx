@@ -1,9 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { SessionProvider } from "@/components/SessionProvider";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { QueryProvider } from "@/components/query-provider";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { ErrorBoundary } from "@/components/error-boundary";
+import { ServiceWorkerRegister } from "@/components/service-worker-register";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -17,13 +20,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Next.js App",
-  description: "A Next.js app with auth, database, and rich editor",
+  title: "Business Diary",
+  description: "A business diary app with auth, database, and rich editor",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "NextApp",
+    title: "Business Diary",
   },
   icons: {
     icon: [
@@ -52,16 +55,22 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="NextApp" />
+        <meta name="apple-mobile-web-app-title" content="BizDiary" />
         <meta name="theme-color" content="#0a0a0a" />
       </head>
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-dvh">
         <ErrorBoundary>
-          <SessionProvider>
-            <SidebarProvider>{children}</SidebarProvider>
-          </SessionProvider>
+          <QueryProvider>
+            <SessionProvider>
+              <SidebarProvider>
+                <AppSidebar />
+                <SidebarInset>{children}</SidebarInset>
+              </SidebarProvider>
+            </SessionProvider>
+          </QueryProvider>
         </ErrorBoundary>
         <Toaster />
+        <ServiceWorkerRegister />
       </body>
     </html>
   );

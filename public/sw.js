@@ -1,7 +1,8 @@
-const CACHE_NAME = 'nextjs-app-v3'
-const API_CACHE_NAME = 'nextjs-api-v2'
-const ASSET_CACHE_NAME = 'nextjs-assets-v2'
-const DYNAMIC_CACHE_NAME = 'nextjs-dynamic-v1'
+const CACHE_NAME = 'nextjs-app-v4'
+const API_CACHE_NAME = 'nextjs-api-v3'
+const ASSET_CACHE_NAME = 'nextjs-assets-v3'
+const DYNAMIC_CACHE_NAME = 'nextjs-dynamic-v2'
+const IMAGE_CACHE_NAME = 'nextjs-images-v1'
 
 const PRECACHE_URLS = [
   '/',
@@ -23,7 +24,7 @@ self.addEventListener('install', (event) => {
 })
 
 self.addEventListener('activate', (event) => {
-  const cacheWhitelist = [CACHE_NAME, API_CACHE_NAME, ASSET_CACHE_NAME, DYNAMIC_CACHE_NAME]
+  const cacheWhitelist = [CACHE_NAME, API_CACHE_NAME, ASSET_CACHE_NAME, DYNAMIC_CACHE_NAME, IMAGE_CACHE_NAME]
   event.waitUntil(
     caches.keys().then((cacheNames) =>
       Promise.all(
@@ -43,11 +44,22 @@ self.addEventListener('fetch', (event) => {
 
   if (request.method !== 'GET') return
 
+  // Image requests: cache-first
+  if (
+    url.pathname.match(/\.(png|jpg|jpeg|gif|webp|avif|svg|ico)$/i) ||
+    request.destination === 'image'
+  ) {
+    event.respondWith(cacheFirst(request, IMAGE_CACHE_NAME))
+    return
+  }
+
+  // API routes
   if (url.pathname.startsWith('/api/')) {
     event.respondWith(networkFirstWithCache(request, API_CACHE_NAME))
     return
   }
 
+  // Static assets
   if (
     url.pathname.startsWith('/_next/static/') ||
     url.pathname.startsWith('/icons/') ||
@@ -57,6 +69,7 @@ self.addEventListener('fetch', (event) => {
     return
   }
 
+  // Navigation routes
   if (request.mode === 'navigate') {
     event.respondWith(networkFirstWithCache(request, CACHE_NAME))
     return
@@ -65,7 +78,43 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(cacheFirstWithNetworkUpdate(request, DYNAMIC_CACHE_NAME))
 })
 
-async function cacheFirst(request: Request, cacheName: string): Promise<Response> {
+// Background sync for queued mutations
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'sync-mutations') {
+    event.waitUntil(syncMutations())
+  }
+})
+
+// Message channel for cache invalidation
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'CLEAR_CACHE') {
+    const cacheName = event.data.cacheName
+    if (cacheName) {
+      caches.delete(cacheName)
+    } else {
+      caches.keys().then((names) =>
+        Promise.all(names.map((name) => caches.delete(name)))
+      )
+    }
+  }
+
+  if (event.data && event.data.type === 'INVALIDATE_API_CACHE') {
+    caches.open(API_CACHE_NAME).then((cache) => {
+      cache.keys().then((keys) => {
+        keys.forEach((key) => cache.delete(key))
+      })
+    })
+  }
+})
+
+async function syncMutations() {
+  const clients = await self.clients.matchAll()
+  clients.forEach((client) => {
+    client.postMessage({ type: 'SYNC_NOW' })
+  })
+}
+
+async function cacheFirst(request, cacheName) {
   const cached = await caches.match(request)
   if (cached) return cached
 
@@ -81,7 +130,7 @@ async function cacheFirst(request: Request, cacheName: string): Promise<Response
   }
 }
 
-async function networkFirstWithCache(request: Request, cacheName: string): Promise<Response> {
+async function networkFirstWithCache(request, cacheName) {
   try {
     const networkResponse = await fetch(request)
     if (networkResponse && networkResponse.status === 200) {
@@ -108,7 +157,7 @@ async function networkFirstWithCache(request: Request, cacheName: string): Promi
   }
 }
 
-async function cacheFirstWithNetworkUpdate(request: Request, cacheName: string): Promise<Response> {
+async function cacheFirstWithNetworkUpdate(request, cacheName) {
   const cached = await caches.match(request)
   const fetchPromise = fetch(request).then(async (networkResponse) => {
     if (networkResponse && networkResponse.status === 200) {

@@ -6,6 +6,7 @@ import { signIn } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useSignup } from "@/lib/hooks/use-signup"
 
 export default function SignUpPage() {
   const router = useRouter()
@@ -13,46 +14,32 @@ export default function SignUpPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
-  const [loading, setLoading] = useState(false)
+  const signup = useSignup()
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setLoading(true)
     setError("")
 
-    try {
-      const res = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
-      })
+    const result = await signup.mutateAsync({ name, email, password })
 
-      const data = await res.json()
-
-      if (!res.ok) {
-        setError(data.error)
-        setLoading(false)
-        return
-      }
-
-      const result = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      })
-
-      if (result?.error) {
-        setError("Account created. Please sign in.")
-        setLoading(false)
-        return
-      }
-
-      router.push("/")
-      router.refresh()
-    } catch {
-      setError("Something went wrong. Please try again.")
-      setLoading(false)
+    if (!result.success) {
+      setError(result.error ?? "Something went wrong")
+      return
     }
+
+    const signInResult = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    })
+
+    if (signInResult?.error) {
+      setError("Account created. Please sign in.")
+      return
+    }
+
+    router.push("/")
+    router.refresh()
   }
 
   return (
@@ -103,8 +90,8 @@ export default function SignUpPage() {
 
           {error && <p className="text-sm text-destructive">{error}</p>}
 
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Creating account..." : "Create account"}
+          <Button type="submit" className="w-full" disabled={signup.isPending}>
+            {signup.isPending ? "Creating account..." : "Create account"}
           </Button>
         </form>
 
