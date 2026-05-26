@@ -2,42 +2,23 @@ module.exports = {
   apps: [
     {
       name: 'business-diary',
-      script: 'node_modules/next/dist/bin/next',
-      args: 'start',
-      cwd: __dirname,
-      instances: 1,
-      exec_mode: 'fork',
+      script: '.next/standalone/server.js',
+      instances: 'max',
+      exec_mode: 'cluster',
+
+      // 🟢 SAFETY 1: Restart process if it exceeds a limit (e.g., 1GB)
+      // This is a "hard reset" to clear memory leaks.
+      max_memory_restart: '1G',
+
+      // 🟢 SAFETY 2: Tell Node/V8 to be aggressive with garbage collection
+      // --max-old-space-size: Sets the limit where Node starts GC heavily.
+      // --gc-interval: Frequency of the garbage collector.
+      node_args: '--max-old-space-size=300',
+
       env: {
         NODE_ENV: 'production',
         PORT: 3000,
-        HOSTNAME: '0.0.0.0',
       },
-      error_file: 'logs/pm2/err.log',
-      out_file: 'logs/pm2/out.log',
-      log_file: 'logs/pm2/combined.log',
-      time: true,
-      max_restarts: 10,
-      restart_delay: 5000,
-      min_uptime: 10000,
-      max_memory_restart: '1G',
-      watch: false,
-      merge_logs: true,
-      autorestart: true,
-      kill_timeout: 5000,
     },
   ],
-
-  deploy: {
-    production: {
-      user: 'node',
-      host: 'your-server-ip',
-      ref: 'origin/main',
-      repo: 'git@github.com:user/business-diary.git',
-      path: '/var/www/business-diary',
-      'pre-setup': 'apt-get update && apt-get install -y nodejs npm',
-      'post-setup': 'npm install && npm run build',
-      'pre-deploy-local': "echo 'Deploying...'",
-      'post-deploy': 'npx prisma migrate deploy && pm2 reload ecosystem.config.js --env production',
-    },
-  },
-};
+}
