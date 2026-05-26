@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { SessionProvider } from "@/components/SessionProvider";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { ErrorBoundary } from "@/components/error-boundary";
 import "./globals.css";
@@ -56,7 +57,9 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col">
         <ErrorBoundary>
-          <SessionProvider>{children}</SessionProvider>
+          <SessionProvider>
+            <SidebarProvider>{children}</SidebarProvider>
+          </SessionProvider>
         </ErrorBoundary>
         <Toaster />
       </body>
