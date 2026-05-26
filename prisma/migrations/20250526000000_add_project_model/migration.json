@@ -1,0 +1,45 @@
+{
+  "version": "5.2",
+  "steps": [
+    {
+      "tag": "AlterTable",
+      "table": {
+        "name": "MdFile",
+        "columns": [
+          { "name": "confidenceScore", "type": "INTEGER", "default": { "name": "0" }, "isRequired": false },
+          { "name": "projectId", "type": "TEXT", "isRequired": false }
+        ],
+        "preamble": "ALTER TABLE \"MdFile\" ADD COLUMN \"confidenceScore\" INTEGER DEFAULT 0, ADD COLUMN \"projectId\" TEXT;"
+      }
+    },
+    {
+      "tag": "CreateTable",
+      "table": {
+        "name": "Project",
+        "columns": [
+          { "name": "id", "type": "TEXT", "default": { "name": "cuid" }, "autoincrement": false },
+          { "name": "name", "type": "TEXT", "isRequired": true },
+          { "name": "description", "type": "TEXT", "isRequired": false },
+          { "name": "userId", "type": "TEXT", "isRequired": true },
+          { "name": "createdAt", "type": "TIMESTAMP(3)", "default": { "name": "now" }, "isRequired": true },
+          { "name": "updatedAt", "type": "TIMESTAMP(3)", "isRequired": true }
+        ],
+        "primaryKey": { "columns": ["id"] }
+      }
+    },
+    {
+      "tag": "CreateForeignKey",
+      "table": "Project",
+      "constraint": "Project_userId_fkey",
+      "columns": ["userId"],
+      "reference": { "table": "User", "columns": ["id"], "onDelete": "CASCADE" }
+    },
+    {
+      "tag": "CreateForeignKey",
+      "table": "MdFile",
+      "constraint": "MdFile_projectId_fkey",
+      "columns": ["projectId"],
+      "reference": { "table": "Project", "columns": ["id"], "onDelete": "SET_NULL" }
+    }
+  ]
+}
