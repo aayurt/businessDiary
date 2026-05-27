@@ -132,6 +132,8 @@ export default function EditorPage() {
   const doSave = React.useCallback(
     async (showToast = false) => {
       const id = fileIdRef.current
+      if (!id) return;
+
       try {
         await updateFile.mutateAsync({
           fileId: id,

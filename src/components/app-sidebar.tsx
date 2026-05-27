@@ -7,7 +7,7 @@ import {
   ChevronRight,
   LayoutDashboard,
   Home,
-  BookOpen,
+  BookOpen, Trophy,
   Pencil,
   Check,
   X,
@@ -65,7 +65,7 @@ import {
 } from "@/lib/hooks/use-projects"
 import {
   useCreateFile,
-  useDeleteFile,
+  useDeleteFile, useUpdateFile,
 } from "@/lib/hooks/use-file"
 import type { Project } from "@/types/project"
 
@@ -87,6 +87,7 @@ export function AppSidebar() {
   const deleteProject = useDeleteProject()
   const createFile = useCreateFile()
   const deleteFile = useDeleteFile()
+  const updateFile = useUpdateFile()
 
   const [isNewProjectDialogOpen, setIsNewProjectDialogOpen] = React.useState(false)
   const [newProjectName, setNewProjectName] = React.useState("")
@@ -147,8 +148,9 @@ export function AppSidebar() {
       cancelRenamingFile()
       return
     }
-    const project = projects?.find((p) => p.files.some((f) => f.id === fileId))
-    if (!project) return
+
+    updateFile.mutate({ fileId, title: newTitle })
+
     setEditingFileId(null)
     setEditingFileTitle("")
   }
@@ -224,6 +226,12 @@ export function AppSidebar() {
                   <SidebarMenuButton tooltip="Dashboard" onClick={() => router.push("/dashboard")}>
                     <LayoutDashboard className="size-4" />
                     <span>Dashboard</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton tooltip="Leaderboard" onClick={() => router.push("/dashboard/leaderboard")}>
+                  <Trophy className="size-4" />
+                  <span>Leaderboard</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenu>

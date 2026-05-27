@@ -6,6 +6,10 @@ import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { ErrorBoundary } from "@/components/error-boundary";
+import { CommandMenu } from "@/components/command-menu";
+import { Terminal } from "@/components/terminal";
+import { ThemeProvider } from "@/components/theme-provider";
+import { ServiceWorkerRegister } from "@/components/sw-register";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -49,6 +53,7 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <head>
         <link rel="manifest" href="/manifest.json" />
@@ -58,17 +63,29 @@ export default function RootLayout({
         <meta name="theme-color" content="#0a0a0a" />
       </head>
       <body className="min-h-dvh">
-        <ErrorBoundary>
-          <QueryProvider>
-            <SessionProvider>
-              <SidebarProvider>
-                <AppSidebar />
-                <SidebarInset>{children}</SidebarInset>
-              </SidebarProvider>
-            </SessionProvider>
-          </QueryProvider>
-        </ErrorBoundary>
-        <Toaster />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <ServiceWorkerRegister />
+          <ErrorBoundary>
+            <QueryProvider>
+              <SessionProvider>
+                <SidebarProvider>
+                  <AppSidebar />
+                  <SidebarInset>
+                    {children}
+                    <CommandMenu />
+                    <Terminal />
+                  </SidebarInset>
+                </SidebarProvider>
+              </SessionProvider>
+            </QueryProvider>
+          </ErrorBoundary>
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

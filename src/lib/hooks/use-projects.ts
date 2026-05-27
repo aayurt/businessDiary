@@ -1,5 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import type { Project } from "@/types/project"
+import { localDb } from "@/lib/local-db"
+import { useLiveQuery } from "dexie-react-hooks"
 
 export const PROJECTS_KEY = ["projects"]
 
@@ -11,11 +13,48 @@ async function fetchProjects(): Promise<Project[]> {
 }
 
 export function useProjects() {
-  return useQuery({
+  const localProjects = useLiveQuery(async () => {
+    const projects = await localDb.projects.toArray();
+    // Reconstruct Project type with files from localDb
+    const enriched = await Promise.all(projects.map(async (p) => {
+      const files = await localDb.files.where('projectId').equals(p.id).toArray();
+      return { ...p, files };
+    }));
+    return enriched;
+  });
+
+  const query = useQuery({
     queryKey: PROJECTS_KEY,
-    queryFn: fetchProjects,
+    queryFn: async () => {
+      const remote = await fetchProjects();
+      // Sync to local
+      for (const p of remote) {
+        await localDb.projects.put({
+          id: p.id,
+          name: p.name,
+          userId: (p as any).userId || '',
+          createdAt: (p as any).createdAt || new Date(),
+          updatedAt: (p as any).updatedAt || new Date(),
+          synced: 1
+        });
+        for (const f of p.files) {
+           await localDb.files.put({
+             ...f,
+             projectId: p.id,
+             synced: 1,
+             lastModified: Date.now()
+           } as any);
+        }
+      }
+      return remote;
+    },
     staleTime: 5 * 60 * 1000,
   })
+
+  return {
+    ...query,
+    data: (localProjects as unknown as Project[]) || query.data
+  }
 }
 
 export function useCreateProject() {
