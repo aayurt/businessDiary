@@ -11,7 +11,6 @@ import { ActivityFeed } from "@/components/dashboard/activity-feed"
 import { FeasibilityMap } from "@/components/dashboard/feasibility-map"
 import { TrendCharts } from "@/components/dashboard/trend-charts"
 import { ExportButton } from "@/components/dashboard/export-button"
-import { SyncButton } from "@/components/ui/sync-button"
 import { useDashboardData } from "@/lib/hooks/use-analytics"
 import {
   FileText,
@@ -66,7 +65,6 @@ export function DashboardClient() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <SyncButton />
           <Button
             variant="ghost"
             size="icon"

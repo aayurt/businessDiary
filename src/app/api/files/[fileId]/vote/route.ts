@@ -9,10 +9,7 @@ export async function POST(
   try {
     const session = await auth()
     if (!session?.user?.id) {
-      return NextResponse.json(
-        { success: false, error: { code: "UNAUTHORIZED", message: "You must be signed in to vote" } },
-        { status: 401 }
-      )
+      return NextResponse.redirect(new URL("/auth/signin", request.url))
     }
 
     const { fileId } = await params

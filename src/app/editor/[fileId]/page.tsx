@@ -11,7 +11,6 @@ import { Input } from "@/components/ui/input"
 import { Slider } from "@/components/ui/slider"
 import { Separator } from "@/components/ui/separator"
 import { ResearchDialog } from "@/components/ui/research-dialog"
-import { SyncButton } from "@/components/ui/sync-button"
 import {
   Save,
   Eye,
@@ -227,7 +226,6 @@ export default function EditorPage() {
           />
         </div>
         <div className="flex items-center gap-3">
-          <SyncButton />
           <span className="text-xs tabular-nums">
             {updateFile.isPending ? (
               <span className="text-muted-foreground">Saving…</span>

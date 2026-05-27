@@ -6,7 +6,6 @@ import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { ErrorBoundary } from "@/components/error-boundary";
-import { ServiceWorkerRegister } from "@/components/service-worker-register";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -70,7 +69,6 @@ export default function RootLayout({
           </QueryProvider>
         </ErrorBoundary>
         <Toaster />
-        <ServiceWorkerRegister />
       </body>
     </html>
   );

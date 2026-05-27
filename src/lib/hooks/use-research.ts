@@ -1,5 +1,4 @@
 import { useMutation } from "@tanstack/react-query"
-import { addToOfflineQueue } from "@/lib/offline-queue"
 
 interface ResearchMessage {
   role: "user" | "assistant"
@@ -24,12 +23,6 @@ export function useResearch() {
       if (!json.success) throw new Error(json.error ?? "Research failed")
       return json.data as string
     },
-    onError: (_err, vars) => {
-      addToOfflineQueue({
-        url: "/api/research",
-        method: "POST",
-        body: vars,
-      })
-    },
+
   })
 }

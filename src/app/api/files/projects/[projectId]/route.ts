@@ -9,7 +9,7 @@ export async function POST(
   try {
     const session = await auth()
     if (!session?.user?.id) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+      return NextResponse.redirect(new URL("/auth/signin", request.url))
     }
 
     const { projectId } = await params
@@ -19,7 +19,16 @@ export async function POST(
       return NextResponse.json({ success: false, error: "Title is required" }, { status: 400 })
     }
 
-    const slug = title.toLowerCase().replace(/ /g, "-") + "-" + Date.now()
+    const project = await db.project.findUnique({
+      where: { id: projectId },
+      select: { id: true, userId: true },
+    })
+    if (!project) {
+      return NextResponse.json({ success: false, error: "Project not found" }, { status: 404 })
+    }
+
+    const baseSlug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")
+    const slug = `${baseSlug}-${Date.now()}-${crypto.randomUUID().slice(0, 8)}`
 
     const file = await db.mdFile.create({
       data: {
@@ -27,7 +36,7 @@ export async function POST(
         slug,
         content: content || "",
         authorId: session.user.id,
-        projectId: projectId,
+        projectId: project.id,
       },
     })
 

@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
   try {
     const session = await auth()
     if (!session?.user?.id) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+      return NextResponse.redirect(new URL("/auth/signin", request.url))
     }
 
     const { title, content, messages } = await request.json()

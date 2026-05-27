@@ -1,5 +1,4 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { addToOfflineQueue } from "@/lib/offline-queue"
 import type { FileEntry, PrivacyMode, FileAccess } from "@/types/file"
 import { PROJECTS_KEY } from "./use-projects"
 
@@ -53,13 +52,6 @@ export function useUpdateFile() {
     onSuccess: (data, vars) => {
       queryClient.setQueryData(fileKey(vars.fileId), data)
     },
-    onError: (_err, vars) => {
-      addToOfflineQueue({
-        url: `/api/files/${vars.fileId}`,
-        method: "PATCH",
-        body: { title: vars.title, content: vars.content, confidenceScore: vars.confidenceScore },
-      })
-    },
     onSettled: (_data, _err, vars) => {
       queryClient.setQueryData(fileKey(vars.fileId), _data)
       queryClient.invalidateQueries({ queryKey: fileKey(vars.fileId) })
@@ -92,7 +84,6 @@ export function useDeleteFile() {
     },
     onError: (_err, _fileId, context) => {
       if (context?.previous) queryClient.setQueryData(PROJECTS_KEY, context.previous)
-      addToOfflineQueue({ url: `/api/files/${_fileId}`, method: "DELETE" })
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: PROJECTS_KEY })
@@ -135,13 +126,8 @@ export function useCreateFile() {
       })
       return { previous, tempId, projectId }
     },
-    onError: (_err, vars, context) => {
+    onError: (_err, _vars, context) => {
       if (context?.previous) queryClient.setQueryData(PROJECTS_KEY, context.previous)
-      addToOfflineQueue({
-        url: `/api/files/projects/${vars.projectId}`,
-        method: "POST",
-        body: { title: vars.title },
-      })
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: PROJECTS_KEY })
@@ -242,13 +228,6 @@ export function useVote() {
       })
       if (!res.ok) throw new Error("Vote failed")
       return res.json()
-    },
-    onError: (_err, vars) => {
-      addToOfflineQueue({
-        url: `/api/files/${vars.fileId}/vote`,
-        method: "POST",
-        body: { value: vars.value },
-      })
     },
     onSettled: (_data, _err, vars) => {
       queryClient.invalidateQueries({ queryKey: fileKey(vars.fileId) })

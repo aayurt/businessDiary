@@ -1,7 +1,6 @@
 "use client"
 
 import { useMutation } from "@tanstack/react-query"
-import { addToOfflineQueue } from "@/lib/offline-queue"
 
 interface SignupInput {
   name: string
@@ -26,12 +25,6 @@ export function useSignup() {
       if (!res.ok) return { success: false, error: data.error }
       return { success: true }
     },
-    onError: (_err, vars) => {
-      addToOfflineQueue({
-        url: "/api/auth/signup",
-        method: "POST",
-        body: vars,
-      })
-    },
+
   })
 }

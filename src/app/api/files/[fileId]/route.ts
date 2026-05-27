@@ -48,7 +48,7 @@ export async function PATCH(
   try {
     const session = await auth()
     if (!session?.user?.id) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+      return NextResponse.redirect(new URL("/auth/signin", request.url))
     }
 
     const { fileId } = await params
@@ -67,13 +67,13 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ fileId: string }> }
 ) {
   try {
     const session = await auth()
     if (!session?.user?.id) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+      return NextResponse.redirect(new URL("/auth/signin", request.url))
     }
 
     const { fileId } = await params

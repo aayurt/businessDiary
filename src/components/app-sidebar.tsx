@@ -26,6 +26,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuAction,
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarMenuSubButton,
@@ -39,6 +40,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
 import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
 import { Input } from "@/components/ui/input"
 import {
   Dialog,
@@ -79,7 +81,7 @@ export function AppSidebar() {
   const session = useSession()
   const router = useRouter()
   const pathname = usePathname()
-  const { data: projects } = useProjects()
+  const { data: projects, isLoading } = useProjects()
   const createProject = useCreateProject()
   const renameProject = useRenameProject()
   const deleteProject = useDeleteProject()
@@ -241,6 +243,16 @@ export function AppSidebar() {
               </Button>
             </div>
             <SidebarGroupContent>
+              {isLoading ? (
+                <div className="space-y-2 px-2">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <Skeleton className="h-4 w-4 shrink-0" />
+                      <Skeleton className="h-4 flex-1" />
+                    </div>
+                  ))}
+                </div>
+              ) : (
               <SidebarMenu>
                 {projects?.map((project) => (
                   <Collapsible key={project.id} className="group/collapsible">
@@ -271,59 +283,51 @@ export function AppSidebar() {
                                 autoFocus
                                 onClick={(e) => e.stopPropagation()}
                               />
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-5 w-5 shrink-0"
+                              <div
+                                className="h-5 w-5 shrink-0 flex items-center justify-center rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground cursor-pointer"
                                 onClick={(e) => {
                                   e.stopPropagation()
                                   saveRenameProject()
                                 }}
                               >
                                 <Check className="size-3" />
-                              </Button>
+                              </div>
                             </div>
                           ) : (
                             <span className="flex-1 truncate">{project.name}</span>
                           )}
-                          {editingProjectId !== project.id && (
-                            <div
-                              className="ml-auto flex items-center gap-0.5 shrink-0"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-6 w-6"
-                                onClick={() => openNewFileDialog(project.id)}
-                              >
-                                <FilePlus className="size-3" />
-                              </Button>
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button variant="ghost" size="icon" className="h-6 w-6">
-                                    <MoreHorizontal className="size-3" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-40">
-                                  <DropdownMenuItem onClick={() => startRenamingProject(project)}>
-                                    <Pencil className="size-3.5 mr-2" />
-                                    Rename
-                                  </DropdownMenuItem>
-                                  <DropdownMenuSeparator />
-                                  <DropdownMenuItem
-                                    className="text-destructive focus:text-destructive"
-                                    onClick={() => openDeleteDialog(project.id)}
-                                  >
-                                    <Trash2 className="size-3.5 mr-2" />
-                                    Delete
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </div>
-                          )}
                         </SidebarMenuButton>
                       </CollapsibleTrigger>
+                      {editingProjectId !== project.id && (
+                        <>
+                          <SidebarMenuAction
+                            onClick={() => openNewFileDialog(project.id)}
+                          >
+                            <FilePlus className="size-3" />
+                          </SidebarMenuAction>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <SidebarMenuAction>
+                                <MoreHorizontal className="size-3" />
+                              </SidebarMenuAction>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-40">
+                              <DropdownMenuItem onClick={() => startRenamingProject(project)}>
+                                <Pencil className="size-3.5 mr-2" />
+                                Rename
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                className="text-destructive focus:text-destructive"
+                                onClick={() => openDeleteDialog(project.id)}
+                              >
+                                <Trash2 className="size-3.5 mr-2" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </>
+                      )}
                       <CollapsibleContent>
                         <SidebarMenuSub>
                           {project.files.map((file) => (
@@ -364,7 +368,7 @@ export function AppSidebar() {
                                   </Button>
                                 </div>
                               ) : (
-                                <div className="group flex items-center">
+                                <div className="group/FileAction flex items-center relative">
                                   <SidebarMenuSubButton
                                     isActive={pathname === `/editor/${file.id}`}
                                     onClick={() => router.push(`/editor/${file.id}`)}
@@ -374,14 +378,9 @@ export function AppSidebar() {
                                   </SidebarMenuSubButton>
                                   <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                      <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="h-6 w-6 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                                        onClick={(e) => e.stopPropagation()}
-                                      >
+                                      <div className="absolute right-1 flex h-6 w-5 items-center justify-center rounded-md opacity-0 group-hover/FileAction:opacity-100 transition-opacity text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground cursor-pointer">
                                         <MoreHorizontal className="size-3" />
-                                      </Button>
+                                      </div>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end" className="w-40">
                                       <DropdownMenuItem onClick={(e) => { e.stopPropagation(); startRenamingFile(file); }}>
@@ -416,6 +415,7 @@ export function AppSidebar() {
                   </Collapsible>
                 ))}
               </SidebarMenu>
+              )}
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>

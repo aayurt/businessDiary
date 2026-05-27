@@ -22,13 +22,13 @@ async function uniqueSlug(base: string, fileId: string): Promise<string> {
 }
 
 export async function POST(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ fileId: string }> }
 ) {
   try {
     const session = await auth()
     if (!session?.user?.id) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+      return NextResponse.redirect(new URL("/auth/signin", request.url))
     }
 
     const { fileId } = await params

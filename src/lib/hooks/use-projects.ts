@@ -1,5 +1,4 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { addToOfflineQueue } from "@/lib/offline-queue"
 import type { Project } from "@/types/project"
 
 export const PROJECTS_KEY = ["projects"]
@@ -46,7 +45,6 @@ export function useCreateProject() {
       if (context?.previous) {
         queryClient.setQueryData(PROJECTS_KEY, context.previous)
       }
-      addToOfflineQueue({ url: "/api/projects", method: "POST", body: { name: _name } })
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: PROJECTS_KEY })
@@ -76,7 +74,6 @@ export function useRenameProject() {
     },
     onError: (_err, _vars, context) => {
       if (context?.previous) queryClient.setQueryData(PROJECTS_KEY, context.previous)
-      addToOfflineQueue({ url: `/api/projects/${_vars.projectId}`, method: "PATCH", body: { name: _vars.name } })
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: PROJECTS_KEY })
@@ -102,7 +99,6 @@ export function useDeleteProject() {
     },
     onError: (_err, _projectId, context) => {
       if (context?.previous) queryClient.setQueryData(PROJECTS_KEY, context.previous)
-      addToOfflineQueue({ url: `/api/projects/${_projectId}`, method: "DELETE" })
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: PROJECTS_KEY })
