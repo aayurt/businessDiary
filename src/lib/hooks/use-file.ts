@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import type { FileEntry, PrivacyMode, FileAccess } from "@/types/file"
 import { PROJECTS_KEY } from "./use-projects"
+import { localDb } from "@/lib/local-db"
+import { useLiveQuery } from "dexie-react-hooks"
 
 export const ACCESS_KEY = (fileId: string) => ["file-access", fileId]
 
@@ -16,13 +18,28 @@ async function fetchFile(fileId: string): Promise<FileEntry> {
 }
 
 export function useFile(fileId: string) {
-  return useQuery({
+  const localFile = useLiveQuery(() => localDb.files.get(fileId), [fileId])
+
+  const query = useQuery({
     queryKey: fileKey(fileId),
-    queryFn: () => fetchFile(fileId),
+    queryFn: async () => {
+      const remote = await fetchFile(fileId)
+      // Sync remote to local on fetch
+      await localDb.files.put({
+        ...remote,
+        synced: 1,
+        lastModified: Date.now()
+      } as any)
+      return remote
+    },
     staleTime: 30 * 1000,
-    refetchOnMount: "always",
     enabled: !!fileId,
   })
+
+  return {
+    ...query,
+    data: (localFile as unknown as FileEntry) || query.data
+  }
 }
 
 export function useUpdateFile() {
@@ -39,15 +56,35 @@ export function useUpdateFile() {
       confidenceScore?: number
       privacy?: PrivacyMode
     }): Promise<FileEntry> => {
-      const res = await fetch(`/api/files/${fileId}`, {
-        method: "PATCH",
-        body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" },
-      })
-      if (!res.ok) throw new Error("Failed to update file")
-      const json = await res.json()
-      if (!json.success) throw new Error(json.error ?? "Failed to update file")
-      return json.data
+      // 1. Update locally immediately
+      const existing = await localDb.files.get(fileId);
+      if (existing) {
+         await localDb.files.update(fileId, {
+           ...data,
+           synced: 0,
+           lastModified: Date.now(),
+           updatedAt: new Date()
+         });
+      }
+
+      // 2. Try remote sync
+      try {
+        const res = await fetch(`/api/files/${fileId}`, {
+          method: "PATCH",
+          body: JSON.stringify(data),
+          headers: { "Content-Type": "application/json" },
+        })
+        if (res.ok) {
+          const json = await res.json()
+          await localDb.files.update(fileId, { synced: 1 });
+          return json.data
+        }
+      } catch (e) {
+        console.warn("Offline: patch queued in localDb")
+      }
+
+      const updated = await localDb.files.get(fileId);
+      return updated as any;
     },
     onSuccess: (data, vars) => {
       queryClient.setQueryData(fileKey(vars.fileId), data)
